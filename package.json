@@ -20,6 +20,10 @@
   },
   "homepage": "https://github.com/RisingStack/bootcamp-roland#readme",
   "dependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "koa": "^2.13.0",
+    "koa-router": "^9.4.0",
     "nodemon": "^2.0.4"
   },
   "devDependencies": {
