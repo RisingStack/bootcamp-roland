@@ -12,7 +12,7 @@ describe('GET /hello', () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.equal('Hello World !');
-            done();
+                done();
           });
     });
 });

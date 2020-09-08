@@ -8,4 +8,6 @@ if(process.env.PORT == undefined) {
 
 app.use(router.routes());
 
-app.listen(process.env.PORT);
+const server = app.listen(process.env.PORT);
+
+module.exports = server;
