@@ -1,0 +1,29 @@
+{
+  "name": "bootcamp-roland",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint \"**/*.js\" --ignore-pattern node_modules/",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RisingStack/bootcamp-roland.git"
+  },
+  "author": "Roland",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RisingStack/bootcamp-roland/issues"
+  },
+  "homepage": "https://github.com/RisingStack/bootcamp-roland#readme",
+  "dependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "devDependencies": {
+    "eslint": "^7.8.1",
+    "mocha": "^8.1.3"
+  }
+}
