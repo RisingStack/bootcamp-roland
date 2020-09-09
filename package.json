@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "lint": "eslint \"**/*.js\" --ignore-pattern node_modules/",
-    "test": "mocha"
+    "test-web": "mocha"
   },
   "repository": {
     "type": "git",
