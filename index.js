@@ -2,7 +2,7 @@ const Koa = require('koa');
 const app = new Koa();
 const router = require('./router');
 
-if(process.env.PORT == undefined) {
+if(!process.env.PORT) {
     throw new Error(`Port is ${process.env.PORT} !`);
 }
 
