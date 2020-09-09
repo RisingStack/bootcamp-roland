@@ -1,13 +1,14 @@
 const Koa = require('koa');
-const app = new Koa();
-const router = require('./router');
 
-if(!process.env.PORT) {
-    throw new Error(`Port is ${process.env.PORT} !`);
-}
+const router = require('./router');
+const config = require('./config');
+
+const app = new Koa();
 
 app.use(router.routes());
 
-const server = app.listen(process.env.PORT);
+if(!config.port) throw new Error(`Port is ${config.port}`);
+
+const server = app.listen(config.port);
 
 module.exports = server;
