@@ -20,8 +20,10 @@
   },
   "homepage": "https://github.com/RisingStack/bootcamp-roland#readme",
   "dependencies": {
-    "koa": "^2.13.0",
-    "koa-router": "^9.4.0"
+    "graphql": "15.3.0",
+    "graphql-request": "3.1.0",
+    "koa": "2.13.0",
+    "koa-router": "9.4.0"
   },
   "devDependencies": {
     "eslint": "7.8.1",
