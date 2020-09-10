@@ -18,7 +18,7 @@ describe('GET /hello', () => {
 
 describe('Invoking searchRepositories', () => {
     it('should return something', async () => {
-        const response = await github.searchRepositories();
+        const response = await github.searchRepositories('WordsMemorizer');
         console.log(JSON.stringify(response, undefined, 2));
     });
 });
