@@ -1,4 +1,5 @@
 const Koa = require('koa');
+require('dotenv-safe').config();
 
 const router = require('./router');
 const config = require('./config');
