@@ -1,9 +1,11 @@
-const {GraphQLClient, gql} = require('graphql-request');
+const {GraphQLClient} = require('graphql-request');
 // graphgl-request 3.1.0 workaround
 // https://github.com/prisma-labs/graphql-request/issues/206
 const { Headers } = require('cross-fetch');
 
 global.Headers = global.Headers || Headers;
+
+const config = require('../config');
 
 
 exports.searchRepositories = async (queryString) => {
@@ -12,11 +14,11 @@ exports.searchRepositories = async (queryString) => {
   
   const graphQLClient = new GraphQLClient(endpoint, {
     headers: {
-      Authorization: 'Bearer e29e30723a393a0bba480cda7e4e7cd4b17b3d21'
+      Authorization: `Bearer ${config.githubToken}`
     }
   });
 
-  const query = gql`{ 
+  const query = `query search($queryString:String!){ 
     search(query: $queryString, type: REPOSITORY, first: 10) {
       repositoryCount
       edges {
