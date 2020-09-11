@@ -34,9 +34,7 @@ exports.searchRepositories = async (queryString) => {
     }
   }`;
 
-  const varibale = {
-    queryString: queryString
-  };
+  const varibale = {queryString};
   
   const response = await graphQLClient.request(query, varibale);
   return response;
@@ -67,7 +65,7 @@ exports.getContributors = async (owner, repoName) => {
 
   const varibale = {
     owner: owner,
-    name: repoName
+    repoName: repoName
   };
   
   const response = await graphQLClient.request(query, varibale);
