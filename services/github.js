@@ -6,10 +6,9 @@ global.Headers = global.Headers || Headers;
 // End of workaround
 
 const config = require('../config');
+const endpoint = 'https://api.github.com/graphql';
 
 exports.searchRepositories = async (queryString) => {
-
-  const endpoint = 'https://api.github.com/graphql';
   
   const graphQLClient = new GraphQLClient(endpoint, {
     headers: {
@@ -44,8 +43,6 @@ exports.searchRepositories = async (queryString) => {
 };
 
 exports.getContributors = async (owner, repoName) => {
-
-  const endpoint = 'https://api.github.com/graphql';
   
   const graphQLClient = new GraphQLClient(endpoint, {
     headers: {
