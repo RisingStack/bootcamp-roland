@@ -1,16 +1,14 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const nock = require('nock');
 
 const server = require('../index');
 const github = require('../services/github');
 
 const should = chai.should();
+const scope = nock('https://api.github.com');
 
 chai.use(chaiHttp);
-
-const nock = require('nock');
-
-const scope = nock('https://api.github.com');
 
 describe('GET /hello', () => {
     it('returns \'Hello World ! \'', async () => {
@@ -21,7 +19,7 @@ describe('GET /hello', () => {
 });
 
 describe('Invoking searchRepositories', () => {
-    it('should return something', async () => {
+    it('should return dummy response', async () => {
         scope.post('/graphql').reply(200,{
             data: {
                 createdAt: '2020',
@@ -42,7 +40,7 @@ describe('Invoking searchRepositories', () => {
 });
 
 describe('Invoking getContributors', () => {
-    it('should return something', async () => {
+    it('should return dummy response', async () => {
         scope.post('/graphql').reply(200,{
             data: {
                 repository: {

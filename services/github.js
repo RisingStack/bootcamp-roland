@@ -2,11 +2,10 @@ const {GraphQLClient} = require('graphql-request');
 // graphgl-request 3.1.0 workaround
 // https://github.com/prisma-labs/graphql-request/issues/206
 const { Headers } = require('cross-fetch');
-
 global.Headers = global.Headers || Headers;
+// End of workaround
 
 const config = require('../config');
-
 
 exports.searchRepositories = async (queryString) => {
 
