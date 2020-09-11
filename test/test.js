@@ -19,6 +19,13 @@ describe('GET /hello', () => {
 describe('Invoking searchRepositories', () => {
     it('should return something', async () => {
         const response = await github.searchRepositories('WordsMemorizer');
-        console.log(JSON.stringify(response, undefined, 2));
+        console.log(JSON.stringify(response, undefined, '-'));
+    });
+});
+
+describe('Invoking getContributors', () => {
+    it('should return something', async () => {
+        const response = await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
+        console.log(JSON.stringify(response, undefined, '-'));
     });
 });
