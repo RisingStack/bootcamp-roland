@@ -44,4 +44,36 @@ exports.searchRepositories = async (queryString) => {
   return response;
 };
 
-exports.getContributors = async () => {};
+exports.getContributors = async (owner, repoName) => {
+
+  const endpoint = 'https://api.github.com/graphql';
+  
+  const graphQLClient = new GraphQLClient(endpoint, {
+    headers: {
+      Authorization: `Bearer ${config.githubToken}`
+    }
+  });
+
+  const query = `query collaboratorsQuery($owner:String!, $name:String!){
+    repository(owner: $owner, name: $name) {
+      collaborators(first:100, affiliation: DIRECT) {
+        edges {
+          node {
+            id
+            login
+            url
+            avatarUrl
+          }
+        }
+      }
+    }
+  }`;
+
+  const varibale = {
+    owner: owner,
+    name: repoName
+  };
+  
+  const response = await graphQLClient.request(query, varibale);
+  return response;
+};
