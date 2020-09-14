@@ -8,13 +8,13 @@ global.Headers = global.Headers || Headers;
 const config = require('../config');
 const endpoint = 'https://api.github.com/graphql';
 
+const graphQLClient = new GraphQLClient(endpoint, {
+  headers: {
+    Authorization: `Bearer ${config.githubToken}`
+  }
+});
+
 exports.searchRepositories = async (queryString) => {
-  
-  const graphQLClient = new GraphQLClient(endpoint, {
-    headers: {
-      Authorization: `Bearer ${config.githubToken}`
-    }
-  });
 
   const query = `query search($queryString:String!){ 
     search(query: $queryString, type: REPOSITORY, first: 10) {
@@ -41,12 +41,6 @@ exports.searchRepositories = async (queryString) => {
 };
 
 exports.getContributors = async (owner, repoName) => {
-  
-  const graphQLClient = new GraphQLClient(endpoint, {
-    headers: {
-      Authorization: `Bearer ${config.githubToken}`
-    }
-  });
 
   const query = `query collaboratorsQuery($owner:String!, $repoName:String!){
     repository(owner: $owner, name: $name) {
