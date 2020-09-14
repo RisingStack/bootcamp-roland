@@ -15,8 +15,11 @@ describe('Github service', () => {
     it('should use Authorization header and a token provided from config.js', async () => { 
         githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql');
         await github.searchRepositories('WordsMemorizer');
+
         const isHeaderCorrect = githubAPIMock.isDone();
+
         githubAPIMock.cleanAll();
+        
         return isHeaderCorrect;
     });
 });
