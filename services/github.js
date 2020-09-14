@@ -48,7 +48,7 @@ exports.getContributors = async (owner, repoName) => {
     }
   });
 
-  const query = `query collaboratorsQuery($owner:String!, $name:String!){
+  const query = `query collaboratorsQuery($owner:String!, $repoName:String!){
     repository(owner: $owner, name: $name) {
       collaborators(first:100, affiliation: DIRECT) {
         edges {
