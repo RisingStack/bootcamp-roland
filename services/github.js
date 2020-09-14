@@ -63,10 +63,7 @@ exports.getContributors = async (owner, repoName) => {
     }
   }`;
 
-  const varibale = {
-    owner: owner,
-    repoName: repoName
-  };
+  const varibale = {owner, repoName};
   
   const response = await graphQLClient.request(query, varibale);
   return response;
