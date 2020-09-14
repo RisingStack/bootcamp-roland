@@ -12,15 +12,14 @@ const githubAPIMock = nock('https://api.github.com');
 chai.use(chaiHttp);
 
 describe('Github service', () => {
-    it('should use Authorization header and a token provided from config.js', async () => { 
+    it('should use Authorization header and a token provided from config.js', async () => {
         githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql');
         await github.searchRepositories('WordsMemorizer');
 
-        const isHeaderCorrect = githubAPIMock.isDone();
-
-        if(!isHeaderCorrect) githubAPIMock.cleanAll();
-        
-        return isHeaderCorrect;
+        if (!githubAPIMock.isDone()) {
+            //githubAPIMock.cleanAll();
+            throw 'GitHub API must have been called with the Bearer token';
+        }
     });
 });
 
