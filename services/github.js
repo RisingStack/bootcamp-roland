@@ -30,8 +30,7 @@ exports.searchRepositories = async (queryString) => {
           }
         }
       }
-    }
-    }
+    }}
   }`;
 
   const varibale = {queryString};
