@@ -11,7 +11,7 @@ const githubAPIMock = nock('https://api.github.com');
 chai.use(chaiHttp);
 
 describe('Github service', () => {
-    it.skip('should use provided auth header/ check used token', async () => {});
+    it.skip('should use provided auth header/ check used token', async () => { });
 });
 
 describe('GET /hello', () => {
@@ -23,43 +23,60 @@ describe('GET /hello', () => {
 });
 
 describe('Invoking searchRepositories', () => {
+    const mockResponse = {
+        createdAt: '2020',
+        collaborators: {
+            totalCount: 1,
+            edges: [{ node: { login: 'bela' } }]
+        }
+    };
+
     it('should return dummy response', async () => {
 
-        const mockResponse = {
-            createdAt: '2020',
-            collaborators: {
-                totalCount: 1,
-                edges: [{ node: { login: 'bela'}}]
-            }
-        };
-
-        githubAPIMock.post('/graphql').reply(200,{data: mockResponse});
+        githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
 
         const response = await github.searchRepositories('WordsMemorizer');
         response.should.deep.equal(mockResponse);
     });
-    it.skip('test queryString input', async () => {});
+
+    it('should include "$queryString" query variable', async () => {
+        githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
+            requestBody.query.should.to.match(/\$queryString:String!/g, '"queryString" is missing!');
+            requestBody.query.should.to.match(/query:\s*\$queryString/g, '"queryString" is missing!');
+            return { data: mockResponse };
+        });
+        await github.searchRepositories('WordsMemorizer');
+    });
 });
 
 describe('Invoking getContributors', () => {
-    it('should return dummy response', async () => {
-        const mockResponse = {
-            repository: {
-                collaborators: {
-                    edges: [{
-                        node: {
-                            id: 'TEST_ID',
-                            login: 'testLogin',
-                            url: 'https://testurl.test',
-                            avatarUrls: 'valami url az avatarhoz'
-                        }
-                    }]
-                }
+    const mockResponse = {
+        repository: {
+            collaborators: {
+                edges: [{
+                    node: {
+                        id: 'TEST_ID',
+                        login: 'testLogin',
+                        url: 'https://testurl.test',
+                        avatarUrls: 'valami url az avatarhoz'
+                    }
+                }]
             }
-        };
+        }
+    };
 
-        githubAPIMock.post('/graphql').reply(200,{data: mockResponse});
+    it('should return dummy response', async () => {
+        githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
         const response = await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
         response.should.deep.equal(mockResponse);
+    });
+
+    it('should include "$owner" and "$repoName" query variable', async () => {
+        githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
+            requestBody.query.should.to.match(/\$owner:String!,\s*\$repoName:String!/g, '"$owner" or "$repoName" is missing!');
+            requestBody.query.should.to.match(/owner:\s*\$owner,\s*name:\s*\$repoName/g, '"$owner" or "$repoName" is missing!');
+            return { data: mockResponse };
+        });
+        await github.getContributors('WordsMemorizer');
     });
 });

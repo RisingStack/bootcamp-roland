@@ -41,8 +41,8 @@ exports.searchRepositories = async (queryString) => {
 
 exports.getContributors = async (owner, repoName) => {
 
-  const query = `query collaboratorsQuery($owner:String!, $repoName:String!){
-    repository(owner: $owner, name: $name) {
+  const query = `query collaboratorsQuery($owner:String!,$repoName:String!){
+    repository(owner: $owner, name: $repoName) {
       collaborators(first:100, affiliation: DIRECT) {
         edges {
           node {
