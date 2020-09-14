@@ -10,6 +10,10 @@ const githubAPIMock = nock('https://api.github.com');
 
 chai.use(chaiHttp);
 
+describe('Github service', () => {
+    it.skip('should use provided auth header/ check used token', async () => {});
+});
+
 describe('GET /hello', () => {
     it('returns \'Hello World ! \'', async () => {
         const response = await chai.request(server).get('/hello');
@@ -20,44 +24,42 @@ describe('GET /hello', () => {
 
 describe('Invoking searchRepositories', () => {
     it('should return dummy response', async () => {
-        githubAPIMock.post('/graphql').reply(200,{
-            data: {
-                createdAt: '2020',
-                collaborators: {
-                    totalCount: 1,
-                    edges: [{
-                        node: {
-                            login: 'bela'
-                        }
-                    }
-                    ]
-                }
+
+        const mockResponse = {
+            createdAt: '2020',
+            collaborators: {
+                totalCount: 1,
+                edges: [{ node: { login: 'bela'}}]
             }
-        });
-        // Is "await" needed here ?
-        await github.searchRepositories('WordsMemorizer');
+        };
+
+        githubAPIMock.post('/graphql').reply(200,{data: mockResponse});
+
+        const response = await github.searchRepositories('WordsMemorizer');
+        response.should.deep.equal(mockResponse);
     });
+    it.skip('test queryString input', async () => {});
 });
 
 describe('Invoking getContributors', () => {
     it('should return dummy response', async () => {
-        githubAPIMock.post('/graphql').reply(200,{
-            data: {
-                repository: {
-                    collaborators: {
-                        edges: [{
-                            node: {
-                                id: 'TEST_ID',
-                                login: 'testLogin',
-                                url: 'https://testurl.test',
-                                avatarUrls: 'valami url az avatarhoz'
-                            }
-                        }]
-                    }
+        const mockResponse = {
+            repository: {
+                collaborators: {
+                    edges: [{
+                        node: {
+                            id: 'TEST_ID',
+                            login: 'testLogin',
+                            url: 'https://testurl.test',
+                            avatarUrls: 'valami url az avatarhoz'
+                        }
+                    }]
                 }
             }
-        });
-        // Is "await" needed here ?
-        await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
+        };
+
+        githubAPIMock.post('/graphql').reply(200,{data: mockResponse});
+        const response = await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
+        response.should.deep.equal(mockResponse);
     });
 });
