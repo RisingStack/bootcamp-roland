@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const nock = require('nock');
 
+const config = require('../config')
 const server = require('../index');
 const github = require('../services/github');
 
@@ -11,7 +12,13 @@ const githubAPIMock = nock('https://api.github.com');
 chai.use(chaiHttp);
 
 describe('Github service', () => {
-    it.skip('should use provided auth header/ check used token', async () => { });
+    it('should use Authorization header and a token provided from config.js', async () => { 
+        githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql');
+        await github.searchRepositories('WordsMemorizer');
+        const isHeaderCorrect = githubAPIMock.isDone();
+        githubAPIMock.cleanAll();
+        return isHeaderCorrect;
+    });
 });
 
 describe('GET /hello', () => {
