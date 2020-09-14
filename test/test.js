@@ -18,8 +18,8 @@ describe('Github service', () => {
 
         const isHeaderCorrect = githubAPIMock.isDone();
 
-        githubAPIMock.cleanAll();
-
+        if(!isHeaderCorrect) githubAPIMock.cleanAll();
+        
         return isHeaderCorrect;
     });
 });
