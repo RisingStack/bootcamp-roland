@@ -16,6 +16,10 @@ const graphQLClient = new GraphQLClient(endpoint, {
 
 exports.searchRepositories = async (queryString) => {
 
+  if (!queryString) {
+    throw 'queryString is a mandatory parameter';
+  }
+
   const query = `query search($queryString:String!){ 
     search(query: $queryString, type: REPOSITORY, first: 10) {
       repositoryCount
