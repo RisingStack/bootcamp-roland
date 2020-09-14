@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const nock = require('nock');
 
-const config = require('../config')
+const config = require('../config');
 const server = require('../index');
 const github = require('../services/github');
 
@@ -19,7 +19,7 @@ describe('Github service', () => {
         const isHeaderCorrect = githubAPIMock.isDone();
 
         githubAPIMock.cleanAll();
-        
+
         return isHeaderCorrect;
     });
 });
