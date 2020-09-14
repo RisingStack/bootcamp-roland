@@ -34,8 +34,8 @@ describe('Invoking searchRepositories', () => {
                 }
             }
         });
-        const response = await github.searchRepositories('WordsMemorizer');
-        console.log(JSON.stringify(response, undefined, '-'));
+        // Is "await" needed here ?
+        await github.searchRepositories('WordsMemorizer');
     });
 });
 
@@ -57,7 +57,7 @@ describe('Invoking getContributors', () => {
                 }
             }
         });
-        const response = await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
-        console.log(JSON.stringify(response, undefined, '-'));
+        // Is "await" needed here ?
+        await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
     });
 });
