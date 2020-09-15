@@ -45,6 +45,7 @@ const getContributorsQueryString = `query collaboratorsQuery($owner:String!,$rep
 
 describe('Github service', () => {
     it('should use Authorization header and a token provided from config.js', async () => {
+        // Response needed to match header pattern and intercept request
         const mockResponse = {
             createdAt: '2020',
             collaborators: {
