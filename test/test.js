@@ -11,7 +11,7 @@ const githubAPIMock = nock('https://api.github.com');
 
 chai.use(chaiHttp);
 
-const testQueryString = `query search($queryString:String!){ 
+const searchRepositoryQueryString = `query search($queryString:String!){ 
     search(query: $queryString, type: REPOSITORY, first: 10) {
       repositoryCount
       edges {
@@ -28,15 +28,38 @@ const testQueryString = `query search($queryString:String!){
     }}
   }`;
 
+const getContributorsQueryString = `query collaboratorsQuery($owner:String!,$repoName:String!){
+    repository(owner: $owner, name: $repoName) {
+      collaborators(first:100, affiliation: DIRECT) {
+        edges {
+          node {
+            id
+            login
+            url
+            avatarUrl
+          }
+        }
+      }
+    }
+  }`;
+
 describe('Github service', () => {
     it('should use Authorization header and a token provided from config.js', async () => {
-        githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql');
+        const mockResponse = {
+            createdAt: '2020',
+            collaborators: {
+                totalCount: 1,
+                edges: [{ node: { login: 'bela' } }]
+            }
+        };
+        githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql').reply(200, {data: mockResponse});
         await github.searchRepositories('WordsMemorizer');
 
-        if (!githubAPIMock.isDone()) {
+        if (!githubAPIMock.isDone()) { 
             //githubAPIMock.cleanAll();
             throw 'GitHub API must have been called with the Bearer token';
         }
+       
     });
 });
 
@@ -67,7 +90,7 @@ describe('Invoking searchRepositories', () => {
 
     it('should include "$queryString" query variable', async () => {
         githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
-            requestBody.query.should.be.equal(testQueryString);
+            requestBody.query.should.be.equal(searchRepositoryQueryString);
             return { data: mockResponse };
         });
         await github.searchRepositories('WordsMemorizer');
@@ -98,8 +121,7 @@ describe('Invoking getContributors', () => {
 
     it('should include "$owner" and "$repoName" query variable', async () => {
         githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
-            requestBody.query.should.to.match(/\$owner:String!,\s*\$repoName:String!/g, '"$owner" or "$repoName" is missing!');
-            requestBody.query.should.to.match(/owner:\s*\$owner,\s*name:\s*\$repoName/g, '"$owner" or "$repoName" is missing!');
+            requestBody.query.should.be.equal(getContributorsQueryString);
             return { data: mockResponse };
         });
         await github.getContributors('WordsMemorizer');
