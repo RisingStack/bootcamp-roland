@@ -11,6 +11,23 @@ const githubAPIMock = nock('https://api.github.com');
 
 chai.use(chaiHttp);
 
+const testQueryString = `query search($queryString:String!){ 
+    search(query: $queryString, type: REPOSITORY, first: 10) {
+      repositoryCount
+      edges {
+        node {
+        ... on RepositoryInfo {
+          name
+          createdAt
+          owner {
+            id
+            login
+          }
+        }
+      }
+    }}
+  }`;
+
 describe('Github service', () => {
     it('should use Authorization header and a token provided from config.js', async () => {
         githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql');
@@ -50,8 +67,7 @@ describe('Invoking searchRepositories', () => {
 
     it('should include "$queryString" query variable', async () => {
         githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
-            requestBody.query.should.to.match(/\$queryString:String!/g, '"queryString" is missing!');
-            requestBody.query.should.to.match(/query:\s*\$queryString/g, '"queryString" is missing!');
+            requestBody.query.should.be.equal(testQueryString);
             return { data: mockResponse };
         });
         await github.searchRepositories('WordsMemorizer');
