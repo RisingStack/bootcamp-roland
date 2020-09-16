@@ -45,18 +45,10 @@ const getContributorsQueryString = `query collaboratorsQuery($owner:String!,$rep
 describe('Github service', () => {
     const githubAPIMock = nock('https://api.github.com');
 
-    afterEach(() => {
-        // TODO: pls review clean up process
-        // nock.restore();
-        // nock.cleanAll();
-    });
-
     it('should use Authorization header and a token provided from config.js', async () => {
         const scope = githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql').reply(200, {data: {}});
         await github.searchRepositories('WordsMemorizer');
-        if (!scope.isDone()) { 
-            throw 'GitHub API must have been called with the Bearer token';
-        }
+        scope.done();
     });
 
     describe('Invoking getContributors', () => {
@@ -76,7 +68,7 @@ describe('Github service', () => {
         };
 
         it('should return dummy response', async () => {
-            githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
+            const scope = githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
             const response = await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
             response.should.deep.equal(mockResponse);
         });
@@ -84,9 +76,7 @@ describe('Github service', () => {
         it('should include "$owner" and "$repoName" query variable', async () => {
             const scope = githubAPIMock.post('/graphql', (body) => (body.query && body.query === getContributorsQueryString)).reply(200, { data: mockResponse });
             await github.getContributors('WordsMemorizer');
-            if (!scope.isDone()) {
-                throw 'GitHub API must have been called with the proper body';
-            }
+            scope.done();
         });
     });
 
