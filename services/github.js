@@ -1,4 +1,4 @@
-const {GraphQLClient} = require('graphql-request');
+const { GraphQLClient } = require('graphql-request');
 // graphgl-request 3.1.0 workaround
 // https://github.com/prisma-labs/graphql-request/issues/206
 const { Headers } = require('cross-fetch');
@@ -15,7 +15,6 @@ const graphQLClient = new GraphQLClient(endpoint, {
 });
 
 exports.searchRepositories = async (queryString) => {
-
   if (!queryString) {
     throw 'queryString is a mandatory parameter';
   }
@@ -37,8 +36,8 @@ exports.searchRepositories = async (queryString) => {
     }}
   }`;
 
-  const varibale = {queryString};
-  
+  const varibale = { queryString };
+
   const response = await graphQLClient.request(query, varibale);
   return response;
 };
@@ -60,8 +59,8 @@ exports.getContributors = async (owner, repoName) => {
     }
   }`;
 
-  const varibale = {owner, repoName};
-  
+  const varibale = { owner, repoName };
+
   const response = await graphQLClient.request(query, varibale);
   return response;
 };
