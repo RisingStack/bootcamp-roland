@@ -46,14 +46,7 @@ const getContributorsQueryString = `query collaboratorsQuery($owner:String!,$rep
 describe('Github service', () => {
     it('should use Authorization header and a token provided from config.js', async () => {
         // Response needed to match header pattern and intercept request
-        const mockResponse = {
-            createdAt: '2020',
-            collaborators: {
-                totalCount: 1,
-                edges: [{ node: { login: 'bela' } }]
-            }
-        };
-        githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql').reply(200, {data: mockResponse});
+        githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql').reply(200, {data: {}});
         await github.searchRepositories('WordsMemorizer');
 
         if (!githubAPIMock.isDone()) { 
