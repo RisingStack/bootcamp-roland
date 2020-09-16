@@ -7,7 +7,6 @@ const server = require('../index');
 const github = require('../services/github');
 
 const should = chai.should();
-const githubAPIMock = nock('https://api.github.com');
 
 chai.use(chaiHttp);
 
@@ -44,16 +43,27 @@ const getContributorsQueryString = `query collaboratorsQuery($owner:String!,$rep
   }`;
 
 describe('Github service', () => {
+    let githubAPIMock;
+
+    beforeEach(() => {
+        githubAPIMock = nock('https://api.github.com');
+    });
+
+    afterEach(() => {
+        githubAPIMock.done();
+
+        // TODO: pls repair this :D
+        // nock.restore();
+        // nock.cleanAll();
+    });
+
     it('should use Authorization header and a token provided from config.js', async () => {
         // Response needed to match header pattern and intercept request
         githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql').reply(200, {data: {}});
         await github.searchRepositories('WordsMemorizer');
-
         if (!githubAPIMock.isDone()) { 
             throw 'GitHub API must have been called with the Bearer token';
         }
-
-        nock.cleanAll();
     });
 
     describe('Invoking getContributors', () => {
@@ -79,11 +89,11 @@ describe('Github service', () => {
         });
 
         it('should include "$owner" and "$repoName" query variable', async () => {
-            githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
-                requestBody.query.should.be.equal(getContributorsQueryString);
-                return { data: mockResponse };
-            });
+            githubAPIMock.post('/graphql', (body) => (body.query && body.query === getContributorsQueryString)).reply(200, { data: mockResponse });
             await github.getContributors('WordsMemorizer');
+            if (!githubAPIMock.isDone()) {
+                throw 'GitHub API must have been called with the proper body';
+            }
         });
     });
 
@@ -98,9 +108,7 @@ describe('Github service', () => {
         };
 
         it('should return dummy response', async () => {
-
             githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
-
             const response = await github.searchRepositories('WordsMemorizer');
             response.should.deep.equal(mockResponse);
         });
