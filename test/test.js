@@ -50,74 +50,78 @@ describe('Github service', () => {
         await github.searchRepositories('WordsMemorizer');
 
         if (!githubAPIMock.isDone()) { 
-            //githubAPIMock.cleanAll();
             throw 'GitHub API must have been called with the Bearer token';
         }
-       
-    });
-});
 
-describe('GET /hello', () => {
-    it('returns \'Hello World ! \'', async () => {
-        const response = await chai.request(server).get('/hello');
-        response.should.have.status(200);
-        response.text.should.equal('Hello World !');
-    });
-});
-
-describe('Invoking searchRepositories', () => {
-    const mockResponse = {
-        createdAt: '2020',
-        collaborators: {
-            totalCount: 1,
-            edges: [{ node: { login: 'bela' } }]
-        }
-    };
-
-    it('should return dummy response', async () => {
-
-        githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
-
-        const response = await github.searchRepositories('WordsMemorizer');
-        response.should.deep.equal(mockResponse);
+        nock.cleanAll();
     });
 
-    it('should include "$queryString" query variable', async () => {
-        githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
-            requestBody.query.should.be.equal(searchRepositoryQueryString);
-            return { data: mockResponse };
-        });
-        await github.searchRepositories('WordsMemorizer');
-    });
-});
-
-describe('Invoking getContributors', () => {
-    const mockResponse = {
-        repository: {
-            collaborators: {
-                edges: [{
-                    node: {
-                        id: 'TEST_ID',
-                        login: 'testLogin',
-                        url: 'https://testurl.test',
-                        avatarUrls: 'valami url az avatarhoz'
-                    }
-                }]
+    describe('Invoking getContributors', () => {
+        const mockResponse = {
+            repository: {
+                collaborators: {
+                    edges: [{
+                        node: {
+                            id: 'TEST_ID',
+                            login: 'testLogin',
+                            url: 'https://testurl.test',
+                            avatarUrls: 'valami url az avatarhoz'
+                        }
+                    }]
+                }
             }
-        }
-    };
+        };
 
-    it('should return dummy response', async () => {
-        githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
-        const response = await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
-        response.should.deep.equal(mockResponse);
+        it('should return dummy response', async () => {
+            githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
+            const response = await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
+            response.should.deep.equal(mockResponse);
+        });
+
+        it('should include "$owner" and "$repoName" query variable', async () => {
+            githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
+                requestBody.query.should.be.equal(getContributorsQueryString);
+                return { data: mockResponse };
+            });
+            await github.getContributors('WordsMemorizer');
+        });
     });
 
-    it('should include "$owner" and "$repoName" query variable', async () => {
-        githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
-            requestBody.query.should.be.equal(getContributorsQueryString);
-            return { data: mockResponse };
+
+    describe('Invoking searchRepositories', () => {
+        const mockResponse = {
+            createdAt: '2020',
+            collaborators: {
+                totalCount: 1,
+                edges: [{ node: { login: 'bela' } }]
+            }
+        };
+
+        it('should return dummy response', async () => {
+
+            githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
+
+            const response = await github.searchRepositories('WordsMemorizer');
+            response.should.deep.equal(mockResponse);
         });
-        await github.getContributors('WordsMemorizer');
+
+        it('should include "$queryString" query variable', async () => {
+            githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
+                requestBody.query.should.be.equal(searchRepositoryQueryString);
+                return { data: mockResponse };
+            });
+            await github.searchRepositories('WordsMemorizer');
+        });
     });
 });
+
+describe('Web instance', () => {
+    describe('GET /hello', () => {
+        it('returns \'Hello World ! \'', async () => {
+            const response = await chai.request(server).get('/hello');
+            response.should.have.status(200);
+            response.text.should.equal('Hello World !');
+        });
+    });
+});
+
