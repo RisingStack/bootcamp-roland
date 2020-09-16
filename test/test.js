@@ -98,12 +98,9 @@ describe('Github service', () => {
 
         // TODO: refact
         it.skip('should include "$queryString" query variable', async () => {
-            githubAPIMock.post('/graphql').reply(200, function (uri, requestBody) {
-                // TODO: pls remove expectation
-                requestBody.query.should.be.equal(searchRepositoryQueryString);
-                return { data: mockResponse };
-            });
+            const scope = githubAPIMock.post('/graphql', body => (body.query && body.query === searchRepositoryQueryString)).reply(200, {data: mockResponse});
             await github.searchRepositories('WordsMemorizer');
+            scope.done();
         });
     });
 });
