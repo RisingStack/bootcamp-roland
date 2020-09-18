@@ -7,7 +7,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "lint": "eslint \"**/*.js\" --ignore-pattern node_modules/",
-    "test-web": "mocha --exit"
+    "test-web": "mocha --exit",
+    "migrate-db":"node ./db/migrate-db"
   },
   "repository": {
     "type": "git",
@@ -23,8 +24,10 @@
     "dotenv-safe": "8.2.0",
     "graphql": "15.3.0",
     "graphql-request": "3.1.0",
+    "knex": "0.21.5",
     "koa": "2.13.0",
-    "koa-router": "9.4.0"
+    "koa-router": "9.4.0",
+    "pg": "8.3.3"
   },
   "devDependencies": {
     "chai": "4.2.0",
