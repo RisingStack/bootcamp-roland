@@ -4,11 +4,9 @@ const nock = require('nock');
 const chaiAsPromised = require('chai-as-promised');
 
 const config = require('../config');
-const server = require('../index');
 const github = require('../services/github');
 
 const should = chai.should();
-const expect = chai.expect;
 
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);
@@ -110,14 +108,3 @@ describe('Github service', () => {
     });
   });
 });
-
-describe('Web instance', () => {
-  describe('GET /hello', () => {
-    it('returns \'Hello World ! \'', async () => {
-      const response = await chai.request(server).get('/hello');
-      response.should.have.status(200);
-      response.text.should.equal('Hello World !');
-    });
-  });
-});
-
