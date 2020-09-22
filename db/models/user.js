@@ -11,13 +11,14 @@ const User = Joi.object({
 
 async function insert(data) {
     console.log(data);
-    Joi.assert(data, User);
-
+    
     try {
+        Joi.assert(data, User);
         const response = await db('user').insert(data);
         return response;
     } catch (err) {
-        return err.detail;
+        console.log(err);
+        return err;
     }
 }
 
@@ -25,7 +26,9 @@ async function read({ id, login }) {
     if (!id && !login) throw 'No parameters given!';
     const param = id ? { id } : { login };
 
-    return await db('user').where(param).select();
+    const response = await db('user').where(param).select();
+    if (!response.length) return `No result for ${JSON.stringify(param)}`;
+    return response;
 }
 
 module.exports = {
