@@ -1,4 +1,4 @@
-const tableName = 'contributon';
+const tableName = 'contribution';
 
 function up(knex) {
   return knex.schema.createTable(tableName, (table) => {
