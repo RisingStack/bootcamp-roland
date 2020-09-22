@@ -4,6 +4,7 @@ const router = new Router();
 const userSchema = require('./db/models/user');
 const repositorySchema = require('./db/models/repository');
 const contributionSchema = require('./db/models/contribution');
+const { use } = require('chai');
 
 router.get('/hello', (ctx) => ctx.body = 'Hello World !');
 
@@ -48,7 +49,10 @@ router.post('/insertUser', async (ctx) => {
 });
 
 // Contribution
-router.get('/readContribution', async (ctx) => ctx.body = await contributionSchema.read({ id: 1}));
+router.get('/readContribution', async (ctx) => {
+    const input = {user: {id: 1, login: 'bela'}};
+    ctx.body = await contributionSchema.read(input);
+});
 
 router.get('/insertContribution', (ctx) => ctx.body = `
     <form method='POST' action='/insertContribution' >
