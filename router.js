@@ -50,7 +50,7 @@ router.post('/insertUser', async (ctx) => {
 
 // Contribution
 router.get('/readContribution', async (ctx) => {
-    const input = {user: {id: 1, login: 'bela'}};
+    const input = {repository: {id: 1, full_name: 'Belas todolist'}};
     ctx.body = await contributionSchema.read(input);
 });
 

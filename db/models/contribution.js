@@ -43,6 +43,7 @@ async function read({ user = {id: '', login: ''}, repository = {id: '', full_nam
     // WHERE "user".id = userID OR "user".login = login
     // Columns: contribution.user, contribution.repository, line_count, full_name
     if (user.id !== '' && user.login !== '') {
+        console.log('-user param given-');
         condition = `"user".id = ${user.id} OR "user".login = '${user.login}'`;
         columns = 'contribution.user, contribution.repository, line_count, full_name';
     };
@@ -51,20 +52,22 @@ async function read({ user = {id: '', login: ''}, repository = {id: '', full_nam
     // WHERE repository.id = repositoryID OR repository.full_name = full_name
     // Columns: "user".id, "user".login, line_count
     if (repository.id !== '' && repository.full_name !== '') {
-        condition = `repository.id = ${repository.id} OR full_name = ${repository.full_name}`;
-        columns = '"user".id, login, line_count';
+        console.log('-repo param given-');
+        condition = `repository.id = ${repository.id} OR full_name = '${repository.full_name}'`;
+        columns = 'full_name, login, line_count ';
     };
 
     // If both params provided -> list all contributions by a user to a single repository
     // WHERE "user".id = userID OR "user".login = login AND repository.id = repositoryID OR repository.full_name = full_name
     // Columns: line_count, full_name, login
-    /*if ((repository !== {id: '', login: ''}) && (user !== {id: '', full_name: ''})) {
+    if ( (repository.id !== '' && repository.full_name !== '') && (user.id !== '' && user.login !== '')) {
+        console.log('-user and repo param given-');
         condition = `
-            (repository.id = ${repository.id} OR "user".login = ${repository.full_name}) AND
-            ("user".id = ${user.id} OR login = ${user.login})
+            (repository.id = ${repository.id} OR "user".login = '${repository.full_name}') AND
+            ("user".id = ${user.id} OR login = '${user.login}')
         `;
         columns = 'line_count, full_name, login';
-    };*/
+    };
 
     const both = await db.raw(`
         SELECT ${columns} FROM contribution
