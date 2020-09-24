@@ -24,9 +24,9 @@ async function insertOrReplace({ repository, user, line_count }) {
     Joi.assert({ repository, user, line_count }, Contribution);
     const response = await db.raw(`
         INSERT INTO contribution ("user",repository,line_count) 
-        VALUES (${user}, ${repository}, ${line_count})
+        VALUES (:user, :repository, :line_count)
         ON CONFLICT ("user", repository) DO UPDATE SET line_count=${line_count}
-    `);
+    `, {user, repository, line_count});
     return response;
 }
 
