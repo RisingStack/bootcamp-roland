@@ -2,9 +2,9 @@ const Joi = require('joi');
 const db = require('../db');
 
 const Contribution = Joi.object({
-    user: Joi.number().required(),
-    repository: Joi.number().required(),
-    line_count: Joi.number().required(),
+    user: Joi.number().integer().required(),
+    repository: Joi.number().integer().required(),
+    line_count: Joi.number().integer().required(),
 });
 
 async function insert(data) {
@@ -25,7 +25,7 @@ async function insertOrReplace({ repository, user, line_count }) {
     const response = await db.raw(`
         INSERT INTO contribution ("user",repository,line_count) 
         VALUES (${user}, ${repository}, ${line_count})
-        ON CONFLICT ("user", repository) DO UPDATE SET "user"=EXCLUDED."user", repository=EXCLUDED.repository, line_count=EXCLUDED.line_count
+        ON CONFLICT ("user", repository) DO UPDATE SET line_count=${line_count}
     `);
     return response;
 }

@@ -1,11 +1,12 @@
 const Joi = require('joi');
+const { schema } = require('../db');
 const db = require('../db');
 
 const User = Joi.object({
-    id: Joi.number().required(),
+    id: Joi.number().integer().required(),
     login: Joi.string().required(),
-    avatar_url: Joi.string(),
-    html_url: Joi.string(),
+    avatar_url: Joi.string().uri({scheme: 'https://github.com'}),
+    html_url: Joi.string().uri({scheme: 'https://github.com'}),
     type: Joi.string()
 });
 

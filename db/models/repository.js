@@ -2,11 +2,11 @@ const Joi = require('joi');
 const db = require('../db');
 
 const Repository = Joi.object({
-    id: Joi.number().required(),
-    owner: Joi.number().required(),
+    id: Joi.number().integer().required(),
+    owner: Joi.number().integer().required(),
     full_name: Joi.string().required(),
-    stargazers_count: Joi.number().required(),
-    html_url: Joi.string().required(),
+    stargazers_count: Joi.number().integer().required(),
+    html_url: Joi.string().uri({scheme: 'https://github.com'}).required(),
     description: Joi.string(),
     language: Joi.string()
 });
