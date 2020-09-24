@@ -1,4 +1,3 @@
-const { request } = require('chai');
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 
