@@ -23,10 +23,7 @@ async function insert(data) {
     }
 }
 
-async function read({ id, login }) {
-    if (!id && !login) throw 'No parameters given!';
-    const param = id ? { id } : { login };
-
+async function read(param = { id, login } = {}) {
     const response = await db('user').where(param).select();
     if (!response.length) return `No result for ${JSON.stringify(param)}`;
     return response;
