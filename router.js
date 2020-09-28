@@ -1,9 +1,11 @@
 const Router = require('koa-router');
-const router = new Router();
+const Joi = require('joi');
 
 const userSchema = require('./db/models/user');
 const repositorySchema = require('./db/models/repository');
 const contributionSchema = require('./db/models/contribution');
+
+const router = new Router();
 
 router.get('/hello', (ctx) => ctx.body = 'Hello World !');
 
@@ -12,20 +14,33 @@ router.get('/repository/:id', async (ctx) => {
     try {
         ctx.body = await repositorySchema.read({ id: ctx.params.id });
     } catch (err) {
-        ctx.status = 403;
+        ctx.status = 500;
     }
 });
 router.get('/repository', async (ctx) => {
     try {
         ctx.body = await repositorySchema.read(ctx.query);
     } catch (err) {
-        ctx.status = 403;
+        ctx.status = 500;
     }
 });
 
 router.post('/repository', async (ctx) => {
     const { id, owner, full_name, html_url, description, language, stargazers_count } = ctx.request.body;
-    ctx.body = await repositorySchema.insert({ id, owner, full_name, html_url, description, language, stargazers_count });
+
+    try {
+        Joi.assert(ctx.request.body, repositorySchema);
+    } catch (err) {
+        ctx.body = 'Invalid parameters!';
+        ctx.status = 403;
+    }
+
+    try {
+        ctx.body = await repositorySchema.insert({ id, owner, full_name, html_url, description, language, stargazers_count });
+    } catch (err) {
+        ctx.status = 500; 
+    }
+
 });
 
 // User
