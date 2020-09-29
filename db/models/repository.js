@@ -16,7 +16,7 @@ async function insert(data) {
 }
 
 async function read(params) {
-    const response = await db('repsitory').where(params).select();
+    const response = await db('repository').where(params).select();
     return response;
 }
 
