@@ -6,7 +6,6 @@ function up(knex) {
     table.string('login', 255).notNullable();
     table.string('avatar_url', 255);
     table.string('html_url', 255);
-    table.string('type', 255);
   });
 }
 

@@ -5,7 +5,6 @@ const schema = Joi.object({
     login: Joi.string().required(),
     avatar_url: Joi.string().uri(),
     html_url: Joi.string().uri(),
-    type: Joi.string()
 });
 
 async function insert(data) {
