@@ -8,14 +8,8 @@ const schema = Joi.object({
 });
 
 async function insert(data) {
-    try {
-        Joi.assert(data, schema);
-        const response = await db('user').insert(data);
-        return response;
-    } catch (err) {
-        console.log(err);
-        return err;
-    }
+    const response = await db('user').insert(data);
+    return response;
 }
 
 async function read(param = { id, login } = {}) {
