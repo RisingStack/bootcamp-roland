@@ -1,20 +1,16 @@
 const Joi = require('joi');
-const { schema } = require('../db');
 const db = require('../db');
 
-const User = Joi.object({
-    id: Joi.number().integer().required(),
+const schema = Joi.object({
     login: Joi.string().required(),
-    avatar_url: Joi.string().uri({scheme: 'https://github.com'}),
-    html_url: Joi.string().uri({scheme: 'https://github.com'}),
+    avatar_url: Joi.string().uri(),
+    html_url: Joi.string().uri(),
     type: Joi.string()
 });
 
 async function insert(data) {
-    console.log(data);
-    
     try {
-        Joi.assert(data, User);
+        Joi.assert(data, schema);
         const response = await db('user').insert(data);
         return response;
     } catch (err) {
@@ -31,5 +27,6 @@ async function read(param = { id, login } = {}) {
 
 module.exports = {
     insert,
-    read
+    read,
+    schema
 };
