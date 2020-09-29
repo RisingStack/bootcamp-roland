@@ -20,7 +20,7 @@ router.get('/repository/:id', async (ctx) => {
     }
 
     try {
-        ctx.body = await repository.read({ value });
+        ctx.body = await repository.read({id: value});
     } catch {
         ctx.status = 500;
     }
