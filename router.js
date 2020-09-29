@@ -1,4 +1,5 @@
 const Router = require('koa-router');
+const Joi = require('joi');
 
 const user = require('./db/models/user');
 const repository = require('./db/models/repository');
@@ -73,12 +74,35 @@ router.post('/user', async (ctx) => {
 
 // Contribution
 router.get('/contribution', async (ctx) => {
-    
-
     const user = { id: ctx.query.userID, login: ctx.query.login };
     const repository = { id: ctx.query.repositoryID, full_name: ctx.query.full_name };
-    const response = await contributionSchema.read({user, repository});
-    ctx.body = response;
+
+    const userSchema = Joi.object({
+        id: Joi.number().integer(),
+        login: Joi.string()
+    });
+    const repositorySchema = Joi.object({
+        id: Joi.number().integer(),
+        full_name: Joi.string()
+    });
+
+    try {
+        Joi.attempt(user, userSchema);
+        Joi.attempt(repository, repositorySchema); 
+    } catch (error) {
+        console.log(error);
+        ctx.body = error.message;
+        ctx.status = 403;
+        return;
+    }
+
+    try {
+        const response = await contributionSchema.read({ user, repository });
+        ctx.body = response;
+    } catch {
+        ctx.status = 500;
+        return;
+    }
 });
 
 // router.post('/contribution', async (ctx) => {
