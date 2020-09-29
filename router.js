@@ -88,7 +88,7 @@ router.get('/contribution', async (ctx) => {
 
     try {
         Joi.attempt(user, userSchema);
-        Joi.attempt(repository, repositorySchema); 
+        Joi.attempt(repository, repositorySchema);
     } catch (error) {
         console.log(error);
         ctx.body = error.message;
@@ -106,8 +106,23 @@ router.get('/contribution', async (ctx) => {
 });
 
 router.post('/contribution', async (ctx) => {
-    const {value, error} = contribution.schema.validate(ctx.request.body);
-    if(error){
+    const { value, error } = contribution.schema.validate(ctx.request.body);
+    if (error) {
+        ctx.body = error.message;
+        ctx.status = 403;
+        return;
+    }
+
+    try {
+        ctx.body = await contribution.insert(value);
+    } catch {
+        ctx.status = 500;
+    }
+});
+
+router.put('/contribution', async (ctx) => {
+    const { value, error } = contribution.schema.validate(ctx.request.body);
+    if (error) {
         ctx.body = error.message;
         ctx.status = 403;
         return;
@@ -115,7 +130,7 @@ router.post('/contribution', async (ctx) => {
 
     try {
         ctx.body = await contribution.insertOrReplace(value);
-    } catch (error){
+    } catch {
         ctx.status = 500;
     }
 });
