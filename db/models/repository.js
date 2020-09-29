@@ -1,8 +1,7 @@
 const Joi = require('joi');
 const db = require('../db');
 
-const Repository = Joi.object({
-    id: Joi.number().integer().required(),
+const schema = Joi.object({
     owner: Joi.number().integer().required(),
     full_name: Joi.string().required(),
     stargazers_count: Joi.number().integer().required(),
@@ -12,10 +11,8 @@ const Repository = Joi.object({
 });
 
 async function insert(data) {
-    console.log(data);
-    
     try {
-        Joi.assert(data, Repository);
+        Joi.assert(data, schema);
         const response = await db('repository').insert(data);
         return response;
     } catch (err) {
@@ -25,12 +22,12 @@ async function insert(data) {
 }
 
 async function read(params = { id, full_name } = {}) {
-    const response = await db('repository').where(params).select();
-    if (!response.length) return `No result for ${JSON.stringify(params)}`;
+    const response = await db('repsitory').where(params).select();
     return response;
 }
 
 module.exports = {
     insert,
-    read
+    read,
+    schema
 };
