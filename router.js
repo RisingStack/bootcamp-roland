@@ -12,12 +12,21 @@ router.get('/hello', (ctx) => ctx.body = 'Hello World !');
 // Repository
 router.get('/repository/:id', async (ctx) => {
     try {
-        ctx.body = await repository.read({ id: ctx.params.id });
+        const {value, error} = Joi.attempt(ctx.params.id, Joi.number().integer());
+    } catch (error) {
+        ctx.body = error.message;
+        ctx.status = 403;
+        return;
+    }
+
+    try {
+        ctx.body = await repository.read({ value });
     } catch {
         ctx.status = 500;
     }
 });
 router.get('/repository', async (ctx) => {
+    
     try {
         ctx.body = await repository.read(ctx.query);
     } catch {
