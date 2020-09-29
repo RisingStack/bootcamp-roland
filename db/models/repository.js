@@ -15,7 +15,7 @@ async function insert(data) {
     return response;
 }
 
-async function read(params = { id, full_name } = {}) {
+async function read(params) {
     const response = await db('repsitory').where(params).select();
     return response;
 }
