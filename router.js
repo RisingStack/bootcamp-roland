@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const user = require('./db/models/user');
 const repository = require('./db/models/repository');
-const contributionSchema = require('./db/models/contribution');
+const contribution = require('./db/models/contribution');
 
 const router = new Router();
 
@@ -97,7 +97,7 @@ router.get('/contribution', async (ctx) => {
     }
 
     try {
-        const response = await contributionSchema.read({ user, repository });
+        const response = await contribution.read({ user, repository });
         ctx.body = response;
     } catch {
         ctx.status = 500;
@@ -105,9 +105,19 @@ router.get('/contribution', async (ctx) => {
     }
 });
 
-// router.post('/contribution', async (ctx) => {
-//     const { repository, user, line_count } = ctx.request.body;
-//     ctx.body = await contributionSchema.insertOrReplace({ repository, user, line_count });
-// });
+router.post('/contribution', async (ctx) => {
+    const {value, error} = contribution.schema.validate(ctx.request.body);
+    if(error){
+        ctx.body = error.message;
+        ctx.status = 403;
+        return;
+    }
+
+    try {
+        ctx.body = await contribution.insertOrReplace(value);
+    } catch (error){
+        ctx.status = 500;
+    }
+});
 
 module.exports = router;
