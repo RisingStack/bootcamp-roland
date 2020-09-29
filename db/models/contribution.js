@@ -9,7 +9,6 @@ const schema = Joi.object({
 });
 
 async function insert(data) {
-    Joi.assert(data, schema);
     const response = await db('contribution').insert(data);
     return response;
 }
