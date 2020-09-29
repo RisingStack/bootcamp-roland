@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const db = require('../db');
+const _ = require('lodash');
 
 const Contribution = Joi.object({
     user: Joi.number().integer().required(),
@@ -8,14 +9,11 @@ const Contribution = Joi.object({
 });
 
 async function insert(data) {
-    console.log(data);
-
     try {
         Joi.assert(data, Repository);
         const response = await db('contribution').insert(data);
         return response;
     } catch (err) {
-        console.log(err);
         return err;
     }
 }
@@ -30,53 +28,33 @@ async function insertOrReplace({ repository, user, line_count }) {
     return response;
 }
 
-async function read({ user = {id: '', login: ''}, repository = {id: '', full_name: ''}}) {
-    let condition = '';
-    let columns = '';
-    console.log(user);
-    console.log(repository);
+async function read(params) {
+    const {user = {}, repository = {}} = params;
 
-    console.log(user !== {id: '', login: ''});
-    console.log(repository == {id: '', full_name: ''});
+    const queryParams = _.omitBy({
+        'user.id': user.id,
+        'user.login': user.login,
+        'repository.id': repository.id,
+        'repository.full_name': repository.fullName
+    }, (param) => _.isNil(param));
 
-    // If only user provided -> list contributions created by the given user
-    // WHERE "user".id = userID OR "user".login = login
-    // Columns: contribution.user, contribution.repository, line_count, full_name
-    if (user.id !== '' && user.login !== '') {
-        console.log('-user param given-');
-        condition = `"user".id = ${user.id} OR "user".login = '${user.login}'`;
-        columns = 'contribution.user, contribution.repository, line_count, full_name';
-    };
+    const response = await db.select('contribution.user','contribution.repository','line_count','full_name', 'login')
+        .from('contribution')
+        .leftJoin('user', 'contribution.user', 'user.id')
+        .leftJoin('repository', 'contribution.repository', 'repository.id')
+        .where(queryParams);
 
-    // IF only the repository provided -> list all contributions made to the given repository
-    // WHERE repository.id = repositoryID OR repository.full_name = full_name
-    // Columns: "user".id, "user".login, line_count
-    if (repository.id !== '' && repository.full_name !== '') {
-        console.log('-repo param given-');
-        condition = `repository.id = ${repository.id} OR full_name = '${repository.full_name}'`;
-        columns = 'full_name, login, line_count ';
-    };
+    const mappedResponse = _.map(response, ({user: userID, repository: repoID, line_count, full_name, login }) => {
+        const user = {id: userID, login};
+        const repository = {id: repoID, full_name};
+        return {
+            line_count,
+            user,
+            repository,
+        };
+    });
 
-    // If both params provided -> list all contributions by a user to a single repository
-    // WHERE "user".id = userID OR "user".login = login AND repository.id = repositoryID OR repository.full_name = full_name
-    // Columns: line_count, full_name, login
-    if ( (repository.id !== '' && repository.full_name !== '') && (user.id !== '' && user.login !== '')) {
-        console.log('-user and repo param given-');
-        condition = `
-            (repository.id = ${repository.id} OR "user".login = '${repository.full_name}') AND
-            ("user".id = ${user.id} OR login = '${user.login}')
-        `;
-        columns = 'line_count, full_name, login';
-    };
-
-    const both = await db.raw(`
-        SELECT ${columns} FROM contribution
-        LEFT JOIN "user" ON contribution."user" = "user".id
-        LEFT JOIN repository ON contribution.repository = repository.id
-        WHERE ${condition}
-    `);
-
-    return both;
+    return mappedResponse;
 }
 
 module.exports = {
