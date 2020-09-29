@@ -85,8 +85,14 @@ router.get('/users/:id', async (ctx) => {
 });
 
 router.get('/users', async (ctx) => {
+    const { value, error } = userSchema.validate(ctx.query);
+    if (error) {
+        ctx.body = error.message;
+        ctx.status = 403;
+        return;
+    }
     try {
-        ctx.body = await user.read(ctx.query);
+        ctx.body = await user.read(value);
     } catch {
         ctx.status = 500;
     }
