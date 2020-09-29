@@ -9,13 +9,9 @@ const schema = Joi.object({
 });
 
 async function insert(data) {
-    try {
-        Joi.assert(data, Repository);
-        const response = await db('contribution').insert(data);
-        return response;
-    } catch (err) {
-        return err;
-    }
+    Joi.assert(data, schema);
+    const response = await db('contribution').insert(data);
+    return response;
 }
 
 async function insertOrReplace({ repository, user, line_count }) {
@@ -24,12 +20,12 @@ async function insertOrReplace({ repository, user, line_count }) {
         INSERT INTO contribution ("user",repository,line_count) 
         VALUES (:user, :repository, :line_count)
         ON CONFLICT ("user", repository) DO UPDATE SET line_count=:line_count
-    `, {user, repository, line_count});
+    `, { user, repository, line_count });
     return response;
 }
 
 async function read(params) {
-    const {user = {}, repository = {}} = params;
+    const { user = {}, repository = {} } = params;
 
     const queryParams = _.omitBy({
         'user.id': user.id,
@@ -38,15 +34,15 @@ async function read(params) {
         'repository.full_name': repository.fullName
     }, (param) => _.isNil(param));
 
-    const response = await db.select('contribution.user','contribution.repository','line_count','full_name', 'login')
+    const response = await db.select('contribution.user', 'contribution.repository', 'line_count', 'full_name', 'login')
         .from('contribution')
         .leftJoin('user', 'contribution.user', 'user.id')
         .leftJoin('repository', 'contribution.repository', 'repository.id')
         .where(queryParams);
 
-    const mappedResponse = _.map(response, ({user: userID, repository: repoID, line_count, full_name, login }) => {
-        const user = {id: userID, login};
-        const repository = {id: repoID, full_name};
+    const mappedResponse = _.map(response, ({ user: userID, repository: repoID, line_count, full_name, login }) => {
+        const user = { id: userID, login };
+        const repository = { id: repoID, full_name };
         return {
             line_count,
             user,
