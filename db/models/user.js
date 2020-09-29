@@ -14,7 +14,6 @@ async function insert(data) {
 
 async function read(param = { id, login } = {}) {
     const response = await db('user').where(param).select();
-    if (!response.length) return `No result for ${JSON.stringify(param)}`;
     return response;
 }
 
