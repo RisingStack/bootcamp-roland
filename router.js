@@ -7,28 +7,48 @@ const contribution = require('./db/models/contribution');
 
 const router = new Router();
 
+const userSchema = Joi.object({
+    id: Joi.number().integer(),
+    login: Joi.string(),
+    avatar_url: Joi.string().uri(),
+    html_url: Joi.string().uri(),
+});
+
+const repositorySchema = Joi.object({
+    id: Joi.number().integer(),
+    full_name: Joi.string(),
+    stargazers_count: Joi.number().integer(),
+    html_url: Joi.string().uri({ scheme: 'https://github.com' }),
+    description: Joi.string(),
+    language: Joi.string()
+});
+
 router.get('/hello', (ctx) => ctx.body = 'Hello World !');
 
 // Repository
 router.get('/repository/:id', async (ctx) => {
-    try {
-        const {value, error} = Joi.attempt(ctx.params.id, Joi.number().integer());
-    } catch (error) {
+    const { value, error } = Joi.attempt(ctx.params.id, Joi.number().integer());
+    if (error) {
         ctx.body = error.message;
         ctx.status = 403;
         return;
     }
 
     try {
-        ctx.body = await repository.read({id: value});
+        ctx.body = await repository.read({ id: value });
     } catch {
         ctx.status = 500;
     }
 });
 router.get('/repository', async (ctx) => {
-    
+    const { value, error } = repositorySchema.validate(ctx.query);
+    if (error) {
+        ctx.body = error.message;
+        ctx.status = 403;
+        return;
+    }
     try {
-        ctx.body = await repository.read(ctx.query);
+        ctx.body = await repository.read(value);
     } catch {
         ctx.status = 500;
     }
@@ -51,9 +71,14 @@ router.post('/repository', async (ctx) => {
 
 // User
 router.get('/users/:id', async (ctx) => {
-    console.log(ctx.params.id);
+    const { value, error } = Joi.attempt(ctx.params.id, Joi.number().integer());
+    if (error) {
+        ctx.body = error.message;
+        ctx.status = 403;
+        return;
+    }
     try {
-        ctx.body = await user.read({ id: ctx.params.id });
+        ctx.body = await user.read({ id: value });
     } catch {
         ctx.status = 500;
     }
@@ -86,20 +111,10 @@ router.get('/contribution', async (ctx) => {
     const user = { id: ctx.query.userID, login: ctx.query.login };
     const repository = { id: ctx.query.repositoryID, full_name: ctx.query.full_name };
 
-    const userSchema = Joi.object({
-        id: Joi.number().integer(),
-        login: Joi.string()
-    });
-    const repositorySchema = Joi.object({
-        id: Joi.number().integer(),
-        full_name: Joi.string()
-    });
-
     try {
         Joi.attempt(user, userSchema);
         Joi.attempt(repository, repositorySchema);
     } catch (error) {
-        console.log(error);
         ctx.body = error.message;
         ctx.status = 403;
         return;
