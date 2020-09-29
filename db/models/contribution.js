@@ -2,7 +2,7 @@ const Joi = require('joi');
 const db = require('../db');
 const _ = require('lodash');
 
-const Contribution = Joi.object({
+const schema = Joi.object({
     user: Joi.number().integer().required(),
     repository: Joi.number().integer().required(),
     line_count: Joi.number().integer().required(),
@@ -19,7 +19,7 @@ async function insert(data) {
 }
 
 async function insertOrReplace({ repository, user, line_count }) {
-    Joi.assert({ repository, user, line_count }, Contribution);
+    Joi.assert({ repository, user, line_count }, schema);
     const response = await db.raw(`
         INSERT INTO contribution ("user",repository,line_count) 
         VALUES (:user, :repository, :line_count)
@@ -60,5 +60,6 @@ async function read(params) {
 module.exports = {
     insert,
     insertOrReplace,
-    read
+    read,
+    schema
 };
