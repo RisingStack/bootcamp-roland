@@ -1,16 +1,11 @@
-const Koa = require('koa');
-const bodyParser = require('koa-bodyparser');
+const express = require('express');
 
 const config = require('./config');
 const router = require('./router');
 
-const app = new Koa();
+const app = express();
 
-app.use(bodyParser());
-app.use(router.routes());
+app.use(express.json());
+app.use('/', router);
 
-if(!config.port) throw new Error(`Port is ${config.port}`);
-
-const server = app.listen(config.port);
-
-module.exports = server;
+app.listen(config.port, () => console.log(`App is running on ${config.port}`));
