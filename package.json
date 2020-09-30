@@ -22,14 +22,11 @@
   "homepage": "https://github.com/RisingStack/bootcamp-roland#readme",
   "dependencies": {
     "dotenv-safe": "8.2.0",
-    "express": "^4.17.1",
+    "express": "4.17.1",
     "graphql": "15.3.0",
     "graphql-request": "3.1.0",
     "joi": "17.2.1",
     "knex": "0.21.5",
-    "koa": "2.13.0",
-    "koa-bodyparser": "4.3.0",
-    "koa-router": "9.4.0",
     "lodash": "4.17.20",
     "pg": "8.3.3"
   },
