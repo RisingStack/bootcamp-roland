@@ -22,6 +22,7 @@
   "homepage": "https://github.com/RisingStack/bootcamp-roland#readme",
   "dependencies": {
     "dotenv-safe": "8.2.0",
+    "express": "^4.17.1",
     "graphql": "15.3.0",
     "graphql-request": "3.1.0",
     "joi": "17.2.1",
