@@ -21,28 +21,28 @@ const repositorySchema = Joi.object({
     language: Joi.string()
 });
 
+router.get('/error', (req, res) => {
+    throw 'error';
+});
+
 router.get('/hello', (req, res) => res.send('Hello World !'));
 
 // Repository
 router.get('/repository/:id', async (req, res) => {
     const id = req.params.id;
-    try {
-        Joi.attempt(id, Joi.number().integer());
-    } catch (error) {
-        res.status(403).send(error.message);
-    }
-    try {
-        response = await repository.read({ id });
-        res.json(response);
-    } catch {
-        res.status(500).end();
-    }
+
+    Joi.attempt(id, Joi.number().integer());
+    //res.status(403).send(error.message);
+    response = await repository.read({ id });
+    res.json(response);
+    //res.status(500).end();
 });
 
 router.get('/repository', async (req, res) => {
     const { value, error } = repositorySchema.validate(req.query);
     if (error) {
         res.status(403).send(error.message);
+        return;
     }
     try {
         const response = await repository.read(value);
@@ -58,7 +58,7 @@ router.post('/repository', async (req, res) => {
         res.status(403).send(error.message);
     }
     try {
-        await repository.insert(value);
+        repository.insert(value).ca;
         res.status(200).end();
     } catch (err) {
         res.status(500).end();
