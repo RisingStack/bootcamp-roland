@@ -9,3 +9,5 @@ app.use(express.json());
 app.use('/', router);
 
 app.listen(config.port, () => console.log(`App is running on ${config.port}`));
+
+module.exports = app;
