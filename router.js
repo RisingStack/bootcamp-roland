@@ -1,12 +1,9 @@
-// const Router = require('koa-router');
 const router = require('express').Router();
 const Joi = require('joi');
 
 const user = require('./db/models/user');
 const repository = require('./db/models/repository');
 const contribution = require('./db/models/contribution');
-
-// const router = new Router();
 
 const userSchema = Joi.object({
     id: Joi.number().integer(),
