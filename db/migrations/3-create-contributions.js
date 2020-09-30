@@ -1,9 +1,9 @@
-const tableName = 'contributon';
+const tableName = 'contribution';
 
 function up(knex) {
   return knex.schema.createTable(tableName, (table) => {
-    table.integer('user').references('id').inTable('user').notNullable();
-    table.integer('repository').references('id').inTable('repository').notNullable();
+    table.integer('user').references('id').inTable('user').unique().notNullable();
+    table.integer('repository').references('id').inTable('repository').unique().notNullable();
     table.integer('line_count');
   });
 }
