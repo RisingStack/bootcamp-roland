@@ -8,7 +8,8 @@ const app = express();
 app.use(express.json());
 app.use('/', router);
 app.use((error, req, res, next) => {
-    return res.status(500).json({ error: error.toString() });
+    const statusCode = error.statusCode || 500;
+    return res.status(statusCode).json({ error: error.toString() });
 });
 
 app.listen(config.port, () => console.log(`App is running on ${config.port}`));
