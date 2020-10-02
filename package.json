@@ -9,6 +9,8 @@
     "lint": "eslint \"**/*.js\" --ignore-pattern node_modules/",
     "test-web": "mocha './{!(node_modules)/**/,}*.spec.js' --exit",
     "migrate-db": "node ./db/migrate-db",
+    "migrate-test-db": "NODE_ENV=test node ./db/migrate-db",
+    "seed-db": "node ./db/seed-db",
     "eslint": "eslint --fix"
   },
   "repository": {
