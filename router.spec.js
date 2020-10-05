@@ -25,6 +25,7 @@ describe('Web instance', () => {
   describe('GET /repository', async () => {
     beforeEach(async () => {
       await knex.raw('TRUNCATE TABLE repository CASCADE');
+      await knex.raw('ALTER SEQUENCE repository_id_seq RESTART WITH 1');
     });
 
     describe('/:id', () => {
@@ -86,12 +87,32 @@ describe('Web instance', () => {
       });
     });
 
-    // describe('GET /repository/:id', () => {
-    //   it('returns dummy object', async () => {
-    //     const response = await chai.request(server).get('/hello');
-    //     response.should.have.status(200);
-    //     response.text.should.equal('Hello World !');
-    //   });
-    // });
+    describe('POST /repository', () => {
+      it('returns the inserted object', async () => {
+        const dummyRepo = {
+          owner: 1,
+          full_name: 'Bela Todo list',
+          description: 'Bela Todo list',
+          html_url: 'https://github.com/',
+          language: 'eng',
+          stargazers_count: 5
+        };
+        await chai.request(server)
+          .post('/repository')
+          .type('application/json')
+          .send(dummyRepo);
+        dummyRepo.id = 1;
+        const repo = await repository.read(dummyRepo);
+        repo[0].should.deep.equal(dummyRepo);
+      });
+      it('returns 403', async () => {
+        const dummyRepo = {};
+        const response = await chai.request(server)
+          .post('/repository')
+          .type('application/json')
+          .send(dummyRepo);
+        response.should.have.status(403);
+      });
+    });
   });
 });
