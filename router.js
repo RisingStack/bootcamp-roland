@@ -70,8 +70,8 @@ router.post('/repository', async (req, res, next) => {
         return;
     }
     try {
-        repository.insert(value);
-        res.status(200).end();
+        const response = await repository.insert(value);
+        res.status(200).json(response);
     } catch (error) {
         next(error);
     }
