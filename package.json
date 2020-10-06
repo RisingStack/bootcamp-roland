@@ -9,7 +9,7 @@
     "lint": "eslint \"**/*.js\" --ignore-pattern node_modules/",
     "test-web": "npm run migrate-test-db && mocha './{!(node_modules)/**/,}*.spec.js' --exit",
     "migrate-db": "node ./db/migrate-db",
-    "migrate-test-db": "NODE_ENV=test node ./db/migrate-db",
+    "migrate-test-db": "NODE_ENV=test knex migrate:latest",
     "seed-db": "node ./db/seed-db",
     "eslint": "eslint --fix"
   },
