@@ -14,7 +14,6 @@ const should = chai.should();
 chai.use(chaiHttp);
 
 const mockRepo = {
-  id: 1,
   owner: 1,
   full_name: 'Bela Todo list',
   description: 'Bela Todo list',
@@ -24,7 +23,6 @@ const mockRepo = {
 };
 
 const mockUser = {
-  id: 1,
   login: 'bela',
   avatar_url: 'https://github.com/avatar',
   html_url: 'https://github.com/avatar'
@@ -37,12 +35,6 @@ const mockContribution = {
 };
 
 describe('Web instance', () => {
-  beforeEach(async () => {
-    await knex.raw('TRUNCATE TABLE contribution CASCADE');
-    await knex.raw('TRUNCATE TABLE repository CASCADE');
-    await knex.raw('TRUNCATE TABLE "user" CASCADE');
-    await knex.raw('ALTER SEQUENCE repository_id_seq RESTART WITH 1');
-  });
 
   describe('GET /hello', () => {
     it('returns \'Hello World ! \'', async () => {
@@ -56,16 +48,15 @@ describe('Web instance', () => {
 
     describe('/:id', () => {
       it('returns a repository with given ID', async () => {
-        await repository.insert(mockRepo);
-        const response = await chai.request(server).get(`/repository/${mockRepo.id}`);
+        const id = await knex('repository').insert(mockRepo).returning('id');
+        const response = await chai.request(server).get(`/repository/${id}`);
         response.should.have.status(200);
-        response.body[0].should.deep.equal(mockRepo);
+        response.body[0].should.include(mockRepo);
       });
     });
 
     describe('/:id with invalid path variable', () => {
       it('returns 403', async () => {
-        await repository.insert(mockRepo);
         const response = await chai.request(server).get('/repository/asd');
         response.should.have.status(403);
       });
@@ -73,12 +64,13 @@ describe('Web instance', () => {
 
     describe('?id=', () => {
       it('returns a repository with given ID', async () => {
-        await repository.insert(mockRepo);
-        const response = await chai.request(server).get(`/repository?id=${mockRepo.id}`);
+        const id = await knex('repository').insert(mockRepo).returning('id');
+        const response = await chai.request(server).get(`/repository?id=${id}`);
         response.should.have.status(200);
-        response.body[0].should.deep.equal(mockRepo);
+        response.body[0].should.include(mockRepo);
       });
     });
+
     describe('?id= with invalid query variable', () => {
       it('returns 403', async () => {
         const response = await chai.request(server).get('/repository?id=asd');
@@ -86,16 +78,16 @@ describe('Web instance', () => {
       });
     });
   });
-  
+
   describe('POST /repository', () => {
     it('returns the inserted object', async () => {
-      const { id, owner, full_name, description, html_url, language, stargazers_count } = mockRepo;
-      await chai.request(server)
+      const response = await chai.request(server)
         .post('/repository')
         .type('application/json')
-        .send({ owner, full_name, description, html_url, language, stargazers_count });
-      const repo = await repository.read({ id });
-      repo[0].should.deep.equal(mockRepo);
+        .send(mockRepo);
+      console.log(response.body, response.header);
+      //const repo = await knex('repository').select('*').where({});
+      //repo[0].should.include(mockRepo);
     });
     it('returns 403', async () => {
       const response = await chai.request(server)
