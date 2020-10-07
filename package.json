@@ -8,11 +8,11 @@
     "dev": "nodemon index.js",
     "lint": "eslint \"**/*.js\" --ignore-pattern node_modules/",
     "test-web": "npm run migrate-test-db && mocha './{!(node_modules)/**/,}*.spec.js' --exit",
-    "migrate-db": "node ./db/migrate-db",
+    "migrate-db": "knex migrate:latest",
     "migrate-test-db": "NODE_ENV=test npm run migrate-down && NODE_ENV=test npm run migrate-up ",
     "migrate-up": "knex migrate:up",
     "migrate-down": "knex migrate:down",
-    "seed-db": "node ./db/seed-db",
+    "seed-db": "knex seed:run",
     "eslint": "eslint --fix"
   },
   "repository": {

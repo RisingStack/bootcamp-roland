@@ -4,9 +4,7 @@ const chaiHttp = require('chai-http');
 process.env.NODE_ENV = 'test';
 
 const server = require('./index');
-const knex = require('./db/db');
-const user = require('./db/models/user');
-const repository = require('./db/models/repository');
+const db = require('./db/db');
 const contribution = require('./db/models/contribution');
 
 const should = chai.should();
@@ -48,7 +46,7 @@ describe('Web instance', () => {
 
     describe('/:id', () => {
       it('returns a repository with given ID', async () => {
-        const id = await knex('repository').insert(mockRepo).returning('id');
+        const id = await db('repository').insert(mockRepo).returning('id');
         const response = await chai.request(server).get(`/repository/${id}`);
         response.should.have.status(200);
         response.body[0].should.include(mockRepo);
@@ -64,7 +62,7 @@ describe('Web instance', () => {
 
     describe('?id=', () => {
       it('returns a repository with given ID', async () => {
-        const id = await knex('repository').insert(mockRepo).returning('id');
+        const id = await db('repository').insert(mockRepo).returning('id');
         const response = await chai.request(server).get(`/repository?id=${id}`);
         response.should.have.status(200);
         response.body[0].should.include(mockRepo);
@@ -85,49 +83,53 @@ describe('Web instance', () => {
         .post('/repository')
         .type('application/json')
         .send(mockRepo);
-      console.log(response.body, response.header);
-      //const repo = await knex('repository').select('*').where({});
-      //repo[0].should.include(mockRepo);
+      const repo = await db('repository').select('*').where({});
+      repo[0].should.include(mockRepo);
     });
     it('returns 403', async () => {
       const response = await chai.request(server)
         .post('/repository')
         .type('application/json')
-        .send(mockRepo);
+        .send({});
       response.should.have.status(403);
     });
   });
 
-  describe('GET /contribution', () => {
-    it('returns all users contributed to a single repository', async () => {
-      await user.insert(mockUser);
-      await repository.insert(mockRepo);
-      await contribution.insert(mockContribution);
+  describe('/contribution', () => {
 
-      const response = await chai.request(server).get(`/contribution?userID=${mockUser.id}`);
-      const { user: userResp, repository: repositoryResp } = response.body[0];
-
-      userResp.should.deep.equal({ id: mockUser.id, login: mockUser.login });
-      repositoryResp.should.deep.equal({ id: mockRepo.id, full_name: mockRepo.full_name });
+    before('before hook', async () => {
+      console.log('before hook');
+      await db('user').insert(mockUser);
+      await db('repository').insert(mockRepo);
+      await db('contribution').insert(mockContribution);
     });
-  });
 
-  describe('POST /contribution', () => {
-    it('returns inserted contribution', async () => {
-      await user.insert(mockUser);
-      await repository.insert(mockRepo);
+    describe('GET /contribution', () => {
 
-      await chai.request(server)
-        .post('/contribution')
-        .type('application/json')
-        .send(mockContribution);
+      it('returns all users contributed to a single repository', async () => {
+        const response = await chai.request(server).get(`/contribution?login=${mockUser.login}`);
+        const { user: userResp, repository: repositoryResp } = response.body[0];
 
-      const response = await contribution.read({ id: mockUser.id });
-      const { user: userResp, repository: repositoryResp } = response[0];
+        userResp.should.include({ login: mockUser.login });
+        repositoryResp.should.include({ full_name: mockRepo.full_name });
+      });
+    });
 
-      userResp.should.deep.equal({ id: mockUser.id, login: mockUser.login });
-      repositoryResp.should.deep.equal({ id: mockRepo.id, full_name: mockRepo.full_name });
+    describe('POST /contribution', () => {
+      it('returns inserted contribution', async () => {
 
+        await chai.request(server)
+          .post('/contribution')
+          .type('application/json')
+          .send(mockContribution);
+
+        const response = await contribution.read({ id: mockUser.id });
+        const { user: userResp, repository: repositoryResp } = response[0];
+
+        userResp.should.include({ login: mockUser.login });
+        repositoryResp.should.include({ full_name: mockRepo.full_name });
+
+      });
     });
   });
 });
