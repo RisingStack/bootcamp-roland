@@ -5,7 +5,7 @@ const schema = Joi.object({
     owner: Joi.number().integer().required(),
     full_name: Joi.string().required(),
     stargazers_count: Joi.number().integer().required(),
-    html_url: Joi.string().uri({ scheme: 'https://github.com' }).required(),
+    html_url: Joi.string().uri().required(),
     description: Joi.string(),
     language: Joi.string()
 });
