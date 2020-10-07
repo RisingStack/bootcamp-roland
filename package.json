@@ -10,6 +10,8 @@
     "test-web": "npm run migrate-test-db && mocha './{!(node_modules)/**/,}*.spec.js' --exit",
     "migrate-db": "node ./db/migrate-db",
     "migrate-test-db": "NODE_ENV=test knex migrate:latest",
+    "migrate-up": "knex migrate:up",
+    "migrate-down": "knex migrate:down",
     "seed-db": "node ./db/seed-db",
     "eslint": "eslint --fix"
   },
