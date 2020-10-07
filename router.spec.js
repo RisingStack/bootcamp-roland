@@ -98,7 +98,6 @@ describe('Web instance', () => {
   describe('/contribution', () => {
 
     before('before hook', async () => {
-      console.log('before hook');
       await db('user').insert(mockUser);
       await db('repository').insert(mockRepo);
       await db('contribution').insert(mockContribution);
