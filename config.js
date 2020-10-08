@@ -6,7 +6,10 @@ const config = {
     dbHost: process.env.DBHOST,
     dbUser: process.env.NODE_ENV === 'test' ? 'postgres' : process.env.DBUSER,
     dbPassword: process.env.NODE_ENV === 'test' ? 'mysecretpassword' : process.env.DBPASSWORD,
-    db: process.env.NODE_ENV === 'test' ? 'test' : process.env.DB
+    db: process.env.NODE_ENV === 'test' ? 'test' : process.env.DB,
+    logger: {
+        level: process.env.LOG_LEVEL
+    }
 };
 
 module.exports = config;
