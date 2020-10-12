@@ -1,7 +1,7 @@
 const express = require('express');
 
 const logger = require('./logger');
-const httpLogger = require('express-pino-logger')({logger: logger});
+const httpLogger = require('express-pino-logger')({ logger });
 const config = require('./config');
 const router = require('./router');
 
@@ -13,10 +13,10 @@ app.use(httpLogger);
 app.use('/api/v1/', router);
 app.use((error, req, res, next) => {
     const statusCode = error.statusCode || 500;
-    logger.warn(error.toString);
+    logger.error(error.toString);
     return res.status(statusCode).json({ error: error.toString() });
 });
 
-app.listen(config.port, () => logger.info(`App is running on ${config.port}`));
+app.listen(config.port, () => logger.info(`App is listening on port: ${config.port}`));
 
 module.exports = app;

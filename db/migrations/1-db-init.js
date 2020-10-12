@@ -29,7 +29,7 @@ async function up(knex) {
     });
     logger.info('Migration was successful!');
   } catch (error) {
-    logger.warn(error, 'Failed to migarte DB');
+    logger.error(error, 'Failed to migarte DB');
   }
 }
 async function down(knex) {
