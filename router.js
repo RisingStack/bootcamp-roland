@@ -21,10 +21,6 @@ const repositorySchema = Joi.object({
     language: Joi.string()
 });
 
-router.get('/error', (req, res, next) => {
-    throw 'error';
-});
-
 router.get('/hello', (req, res, next) => res.send('Hello World !'));
 
 // Repository

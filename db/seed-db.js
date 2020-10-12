@@ -1,9 +1,10 @@
 const knex = require('./db');
+const logger = require('../logger');
 
 knex.seed.run().then(() => {
-    console.log('Database seeding is a success!');
+    logger.info('Database seeding is a success!');
     process.exit(0);
 }).catch((error) => {
-    console.log(error);
+    logger.error(error);
     process.exit(1);
 });
