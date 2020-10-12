@@ -8,7 +8,6 @@ const router = require('./router');
 const app = express();
 
 app.use(express.json());
-//app.use(console.log);
 app.use(httpLogger);
 app.use('/api/v1/', router);
 app.use((error, req, res, next) => {

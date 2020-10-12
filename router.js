@@ -173,4 +173,8 @@ router.put('/contribution', async (req, res, next) => {
     }
 });
 
+router.get('/auth', (req, res ,next) => {
+    
+});
+
 module.exports = router;
