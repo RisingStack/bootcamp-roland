@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/RisingStack/bootcamp-roland#readme",
   "dependencies": {
+    "bcrypt": "5.0.0",
     "dotenv-safe": "8.2.0",
     "express": "4.17.1",
     "express-pino-logger": "5.0.0",
