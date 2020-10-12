@@ -4,6 +4,7 @@ const Joi = require('joi');
 const user = require('./db/models/user');
 const repository = require('./db/models/repository');
 const contribution = require('./db/models/contribution');
+const config = require('./config');
 
 const userSchema = Joi.object({
     id: Joi.number().integer(),
@@ -171,10 +172,6 @@ router.put('/contribution', async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-});
-
-router.get('/auth', (req, res ,next) => {
-    
 });
 
 module.exports = router;
