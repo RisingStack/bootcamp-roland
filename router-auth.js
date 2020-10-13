@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const appUser = require('./db/models/app_user');
-const auth = require('./authtenticator');
+const auth = require('./authenticator');
 const config = require('./config');
 
 const appUserSchema = Joi.object({
