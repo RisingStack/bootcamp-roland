@@ -142,6 +142,17 @@ describe('Web instance', () => {
         repositoryResp.should.include({ full_name: mockRepo.full_name });
 
       });
+      it('returns 401', async () => {
+
+        await db('contribution').delete(mockContribution);
+
+        const response = await chai.request(server)
+          .post(`${apiRouteV1}/contribution`)
+          .type('application/json')
+          .send(mockContribution);
+
+        response.should.have.status(401);
+      });
     });
   });
 });
