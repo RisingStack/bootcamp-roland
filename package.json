@@ -13,6 +13,7 @@
     "migrate-up": "knex migrate:up",
     "migrate-down": "knex migrate:down",
     "seed-db": "knex seed:run",
+    "seed-test-db": "NODE_ENV=test knex seed:run",
     "eslint": "eslint --fix"
   },
   "repository": {
