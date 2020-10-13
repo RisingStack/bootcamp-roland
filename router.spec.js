@@ -1,13 +1,17 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const jwt = require('jsonwebtoken');
 
 process.env.NODE_ENV = 'test';
 
 const server = require('./index');
 const db = require('./db/db');
 const contribution = require('./db/models/contribution');
+const config = require('./config');
 
 const should = chai.should();
+const apiRoute = '/api';
+const apiRouteV1 = `${apiRoute}/v1`;
 
 chai.use(chaiHttp);
 
@@ -34,9 +38,11 @@ const mockContribution = {
 
 describe('Web instance', () => {
 
+  const token = jwt.sign({}, config.jwt);
+
   describe('GET /hello', () => {
     it('returns \'Hello World ! \'', async () => {
-      const response = await chai.request(server).get('/hello');
+      const response = await chai.request(server).get(`${apiRouteV1}/hello`);
       response.should.have.status(200);
       response.text.should.equal('Hello World !');
     });
@@ -47,7 +53,7 @@ describe('Web instance', () => {
     describe('/:id', () => {
       it('returns a repository with given ID', async () => {
         const id = await db('repository').insert(mockRepo).returning('id');
-        const response = await chai.request(server).get(`/repository/${id}`);
+        const response = await chai.request(server).get(`${apiRouteV1}/repository/${id}`);
         response.should.have.status(200);
         response.body[0].should.include(mockRepo);
       });
@@ -55,7 +61,7 @@ describe('Web instance', () => {
 
     describe('/:id with invalid path variable', () => {
       it('returns 403', async () => {
-        const response = await chai.request(server).get('/repository/asd');
+        const response = await chai.request(server).get(`${apiRouteV1}/repository/asd`);
         response.should.have.status(403);
       });
     });
@@ -63,7 +69,7 @@ describe('Web instance', () => {
     describe('?id=', () => {
       it('returns a repository with given ID', async () => {
         const id = await db('repository').insert(mockRepo).returning('id');
-        const response = await chai.request(server).get(`/repository?id=${id}`);
+        const response = await chai.request(server).get(`${apiRouteV1}/repository?id=${id}`);
         response.should.have.status(200);
         response.body[0].should.include(mockRepo);
       });
@@ -71,7 +77,7 @@ describe('Web instance', () => {
 
     describe('?id= with invalid query variable', () => {
       it('returns 403', async () => {
-        const response = await chai.request(server).get('/repository?id=asd');
+        const response = await chai.request(server).get(`${apiRouteV1}/repository?id=asd`);
         response.should.have.status(403);
       });
     });
@@ -80,15 +86,18 @@ describe('Web instance', () => {
   describe('POST /repository', () => {
     it('returns the inserted object', async () => {
       const response = await chai.request(server)
-        .post('/repository')
+        .post(`${apiRouteV1}/repository`)
         .type('application/json')
+        .set('Authorization', `Bearer ${token}`)
         .send(mockRepo);
       const repo = await db('repository').select('*').where({});
+      response.should.have.status(200);
       repo[0].should.include(mockRepo);
     });
     it('returns 403', async () => {
       const response = await chai.request(server)
-        .post('/repository')
+        .post(`${apiRouteV1}/repository`)
+        .set('Authorization', `Bearer ${token}`)
         .type('application/json')
         .send({});
       response.should.have.status(403);
@@ -106,7 +115,7 @@ describe('Web instance', () => {
     describe('GET /contribution', () => {
 
       it('returns all users contributed to a single repository', async () => {
-        const response = await chai.request(server).get(`/contribution?login=${mockUser.login}`);
+        const response = await chai.request(server).get(`${apiRouteV1}/contribution?login=${mockUser.login}`);
         const { user: userResp, repository: repositoryResp } = response.body[0];
 
         userResp.should.include({ login: mockUser.login });
@@ -117,14 +126,15 @@ describe('Web instance', () => {
     describe('POST /contribution', () => {
       it('returns inserted contribution', async () => {
 
-        await chai.request(server)
-          .post('/contribution')
+        const postResponse = await chai.request(server)
+          .post(`${apiRouteV1}/contribution`)
           .type('application/json')
           .send(mockContribution);
 
-        const response = await contribution.read({ id: mockUser.id });
-        const { user: userResp, repository: repositoryResp } = response[0];
+        const readResponse = await contribution.read({ id: mockUser.id });
+        const { user: userResp, repository: repositoryResp } = readResponse[0];
 
+        postResponse.should.have.status(200);
         userResp.should.include({ login: mockUser.login });
         repositoryResp.should.include({ full_name: mockRepo.full_name });
 
