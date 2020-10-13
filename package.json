@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "lint": "eslint \"**/*.js\" --ignore-pattern node_modules/",
-    "test-web": "npm run migrate-test-db && mocha './{!(node_modules)/**/,}*.spec.js' --exit",
+    "test-web": "npm run migrate-test-db && LOF_LEVEL=silent mocha './{!(node_modules)/**/,}*.spec.js' --exit",
     "migrate-db": "knex migrate:latest",
     "migrate-test-db": "NODE_ENV=test npm run migrate-down && NODE_ENV=test npm run migrate-up ",
     "migrate-up": "knex migrate:up",
