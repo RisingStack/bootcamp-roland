@@ -5,13 +5,13 @@ const config = require('./config');
 
 function authMiddleware(req, res, next) {
     try {
-        if (!req.headers.authorization) throw 'Authentication failed!';
+        if (!req.headers.authorization) return next(new Error('Authentication failed!'));
         const token = req.headers.authorization.replace(/Bearer\s*/, '');
         const decoded = jwt.verify(token, config.jwt);
-        next();
+        return next();
     } catch (error) {
         error.statusCode = 401;
-        next(error);
+        return next(error);
     }
 }
 
