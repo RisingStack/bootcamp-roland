@@ -126,8 +126,11 @@ describe('Web instance', () => {
     describe('POST /contribution', () => {
       it('returns inserted contribution', async () => {
 
+        await db('contribution').delete(mockContribution);
+
         const postResponse = await chai.request(server)
           .post(`${apiRouteV1}/contribution`)
+          .set('Authorization', `Bearer ${token}`)
           .type('application/json')
           .send(mockContribution);
 
