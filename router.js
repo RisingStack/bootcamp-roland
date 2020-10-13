@@ -4,7 +4,7 @@ const Joi = require('joi');
 const user = require('./db/models/user');
 const repository = require('./db/models/repository');
 const contribution = require('./db/models/contribution');
-const config = require('./config');
+const auth = require('./authenticator');
 
 const userSchema = Joi.object({
     id: Joi.number().integer(),
@@ -59,7 +59,7 @@ router.get('/repository', async (req, res, next) => {
     }
 });
 
-router.post('/repository', async (req, res, next) => {
+router.post('/repository', auth, async (req, res, next) => {
     const { error, value } = repository.schema.validate(req.body);
     if (error) {
         error.statusCode = 403;
@@ -107,7 +107,7 @@ router.get('/users', async (req, res, next) => {
     }
 });
 
-router.post('/user', async (req, res, next) => {
+router.post('/user', auth, async (req, res, next) => {
     const { error, value } = user.schema.validate(req.body);
     if (error) {
         error.statusCode = 403;
@@ -143,7 +143,7 @@ router.get('/contribution', async (req, res, next) => {
     }
 });
 
-router.post('/contribution', async (req, res, next) => {
+router.post('/contribution', auth, async (req, res, next) => {
     const { value, error } = contribution.schema.validate(req.body);
     if (error) {
         error.statusCode = 403;
@@ -158,7 +158,7 @@ router.post('/contribution', async (req, res, next) => {
     }
 });
 
-router.put('/contribution', async (req, res, next) => {
+router.put('/contribution', auth, async (req, res, next) => {
     const { value, error } = contribution.schema.validate(req.body);
     if (error) {
         error.statusCode = 403;
