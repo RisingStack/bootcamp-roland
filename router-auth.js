@@ -12,42 +12,38 @@ const appUserSchema = Joi.object({
     password: Joi.string().required(),
 });
 
-router.post('/signUp', async (req, res ,next) => {
+router.post('/signUp', async (req, res, next) => {
     try {
-        const {username, password} = req.body;
-        Joi.assert({username, password}, appUserSchema);
+        const { username, password } = req.body;
+        Joi.assert({ username, password }, appUserSchema);
         const hashedPassword = bcrypt.hashSync(password, 12);
-        const response = await appUser.insert({username, password: hashedPassword});
+        await appUser.insert({ username, password: hashedPassword });
 
-        const token = jwt.sign({}, config.jwt);
+        const token = jwt.sign({ username }, config.jwt);
 
-        res.header({Authorization: `Bearer ${token}`}).json({token, response});
+        res.header({ Authorization: `Bearer ${token}` }).send('Signed up!');
     } catch (error) {
         next(error);
     }
 });
 
-router.post('/signIn', async (req, res ,next) => {
+router.post('/signIn', async (req, res, next) => {
     try {
-        const {username, password} = req.body;
-        Joi.assert({username, password}, appUserSchema);
-        
-        const response = await appUser.read(username);
-        if(!bcrypt.compareSync(password, response[0].password)) throw 'Invalid credentials!';
+        const { username, password } = req.body;
+        Joi.assert({ username, password }, appUserSchema);
 
-        const token = jwt.sign({username}, config.jwt);
-        res.header({Authorization: `Bearer ${token}`}).json({token});
+        const response = await appUser.read(username);
+        if (!bcrypt.compareSync(password, response[0].password)) throw 'Invalid credentials!';
+
+        const token = jwt.sign({ username }, config.jwt);
+        res.header({ Authorization: `Bearer ${token}` }).send('Signed in!');
     } catch (error) {
         next(error);
     }
 });
 
-router.get('/signOut', auth, (req, res ,next) => {
-
-});
-
-router.get('/auth', auth, (req, res ,next) => {
-    res.json(req.body);
+router.get('/signOut', auth, (req, res) => {
+    res.send('Signed out!');
 });
 
 module.exports = router;
