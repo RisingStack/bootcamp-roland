@@ -1,0 +1,298 @@
+FORMAT: 1A
+HOST: http://localhost:3000/api
+
+# bootcamp
+
+Polls is a simple API allowing consumers to view polls and vote in them.
+
+# Group Authentication
+
+## Signin [/signIn]
+
+### Signin [POST]
+
++ Attributes
+    + username (string, required)
+    + password (string, required)
+
++ Request
+
+        {
+            "username": "bela",
+            "password": "1bela2"
+        }
+    
++ Response 200 (application/json)
+
++ Response 500 (application/json)
+
+## Signout [/signOut]
+
+### Signout [GET]
+    
++ Response 200 (application/json)
+
++ Response 500 (application/json)
+
+## Signup [/signUp]
+
+### Signup [POST]
+
++ Attributes
+    + username (string, required)
+    + password (string, required)
+
++ Request
+
+        {
+            "username": "bela",
+            "password": "1bela2"
+        }
+    
++ Response 200 (application/json)
+
++ Response 500 (application/json)
+
+# Group User
+
+## Read by ID [/v1/users/{id}]
+
++ Parameters
+    + id (number) - User's ID
+
+### Read [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 1,
+                "owner": 1,
+                "full_name": "Janos Todo list",
+                "description": "Janos Todo list",
+                "html_url": "https://github.com/",
+                "language": "eng",
+                "stargazers_count": 5
+            }
+        ]
+        
++ Response 403 (application/json)
+
++ Response 500 (application/json)
+        
+## Read by Query [/v1/users{?id,login,avatar_url,html_url}]
+
++ Parameters
+    + id (number) - User's ID
+    + login (string) - Login name
+    + avatar_url - Link to user's avatar
+    + html_url - Link to users's page
+
+### Read [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 1,
+                "owner": 1,
+                "full_name": "Janos Todo list",
+                "description": "Janos Todo list",
+                "html_url": "https://github.com/",
+                "language": "eng",
+                "stargazers_count": 5
+            }
+        ]
+        
++ Response 403 (application/json)
+
++ Response 500 (application/json)
+
+## Insert [/v1/user]
+
+### Insert [POST]
+
++ Attributes
+    + id (string, required)
+    + login (string, required)
+    + avatar_url (string, required)
+    + html_url (string, required)
+
++ Request
+    
+        { 
+            "id": 1,
+            "login": 'bela',
+            "avatar_url": 'https://github.com/avatar/bela',
+            "html_url": 'https://github.com/avatar/bela'
+        }
+
++ Response 200 (application/json)
+
++ Response 403 (application/json)
+
++ Response 500 (application/json)
+
+# Group Repository
+
+## Read by ID [/v1/repository/{id}]
+
++ Parameters
+    + id (number) - ID of the repository
+
+### Read [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 1,
+                "owner": 1,
+                "full_name": "Janos Todo list",
+                "description": "Janos Todo list",
+                "html_url": "https://github.com/",
+                "language": "eng",
+                "stargazers_count": 5
+            }
+        ]
+        
++ Response 403 (application/json)
+
++ Response 500 (application/json)
+        
+## Read by Query [/v1/repository{?id,owner,full_name,description,html_url,language,stargazers_count}]
+
++ Parameters
+    + id (number) - User's ID
+    + owner (number) - Owner's ID
+    + full_name (string) - Name of the repository
+    + html_url - Link to repository
+    + language - Language of the repository
+    + stargazers_count
+
+### Read [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 1,
+                "owner": 1,
+                "full_name": "Janos Todo list",
+                "description": "Janos Todo list",
+                "html_url": "https://github.com/",
+                "language": "eng",
+                "stargazers_count": 5
+            }
+        ]
+        
++ Response 403 (application/json)
+
++ Response 500 (application/json)
+
+## Insert [/v1/repository]
+
+### Insert [POST]
+
++ Attributes
+    + owner (string, required)
+    + full_name (string, required)
+    + description (string, required)
+    + html_url (string, required)
+    + language (string, required) 
+    + stargazers_count (number, required)
+
++ Request
+    
+        { 
+            "owner": 1,
+            "full_name": "todo list",
+            "description": "todo list by bela",
+            "html_url": "https://github.com/avatar/bela",
+            "language": "eng",
+            "stargazers_count": 5
+        }
+
++ Response 200 (application/json)
+
++ Response 403 (application/json)
+
++ Response 500 (application/json)
+
+# Group Contribution
+
+## Read by user and/or contribution [/v1/contribution{?userID,login,repositoryID,full_name}]
+
++ Parameters
+    + userID (number, optional) - User's ID
+    + repositoryID (number, optional) - Owner's ID
+    + login (string, optional) - Login name of the user
+    + full_name (string, optional) - Name of the repository
+
+### Read [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "line_count": 35,
+                "user":
+                {
+                    "id": 2,
+                    "login": "bela"
+                },
+                "repository":
+                {
+                    "id": 3,
+                    "full_name": "Bela shopping list"
+                }
+            }
+        ]
+        
++ Response 403 (application/json)
+
++ Response 500 (application/json)
+
+## Insert [/v1/contribution]
+
+### Insert [POST]
+
++ Attributes
+    + user (number, required)
+    + repository (number, required)
+    + line_count (number, required)
+
++ Request
+    
+        { 
+            "user": 1,
+            "repository": 1,
+            "line_count": 45,
+        }
+
++ Response 200 (application/json)
+
++ Response 403 (application/json)
+
++ Response 500 (application/json)
+
+### Update or Insert [PUT]
+
++ Attributes
+    + user (number, required)
+    + repository (number, required)
+    + line_count (number, required)
+
++ Request
+    
+        { 
+            "user": 1,
+            "repository": 1,
+            "line_count": 45,
+        }
+
++ Response 200 (application/json)
+
++ Response 403 (application/json)
+
++ Response 500 (application/json)
