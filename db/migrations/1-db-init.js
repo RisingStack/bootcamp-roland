@@ -3,6 +3,7 @@ const logger = require('../../logger');
 const userTable = 'user';
 const repoTable = 'repository';
 const contributionTable = 'contribution';
+const appUserTable = 'app_user';
 
 async function up(knex) {
   try {
@@ -22,10 +23,15 @@ async function up(knex) {
       table.integer('stargazers_count');
     });
     await knex.schema.createTable(contributionTable, (table) => {
-      table.integer('user').references('id').inTable('usr').notNullable();
+      table.integer('user').references('id').inTable('user').notNullable();
       table.integer('repository').references('id').inTable('repository').notNullable();
       table.integer('line_count');
       table.unique(['user', 'repository']);
+    });
+    await knex.schema.createTable(appUserTable, (table) => {
+      table.increments('id').primary();
+      table.string('username').notNullable();
+      table.string('password').notNullable();
     });
     logger.info('Migration was successful!');
   } catch (error) {
@@ -36,6 +42,7 @@ async function down(knex) {
   await knex.schema.dropTableIfExists(contributionTable);
   await knex.schema.dropTableIfExists(repoTable);
   await knex.schema.dropTableIfExists(userTable);
+  await knex.schema.dropTableIfExists(appUserTable);
 }
 
 module.exports = {

@@ -4,6 +4,7 @@ const Joi = require('joi');
 const user = require('./db/models/user');
 const repository = require('./db/models/repository');
 const contribution = require('./db/models/contribution');
+const auth = require('./authenticator');
 
 const userSchema = Joi.object({
     id: Joi.number().integer(),
@@ -31,14 +32,13 @@ router.get('/repository/:id', async (req, res, next) => {
         Joi.assert({ id }, userSchema);
     } catch (error) {
         error.statusCode = 403;
-        next(error);
-        return;
+        return next(error);
     }
     try {
         const response = await repository.read({ id });
         res.json(response);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 
 });
@@ -47,29 +47,27 @@ router.get('/repository', async (req, res, next) => {
     const { value, error } = repositorySchema.validate(req.query);
     if (error) {
         error.statusCode = 403;
-        next(error);
-        return;
+        return next(error);
     }
     try {
         const response = await repository.read(value);
         res.json(response);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 });
 
-router.post('/repository', async (req, res, next) => {
+router.post('/repository', auth, async (req, res, next) => {
     const { error, value } = repository.schema.validate(req.body);
     if (error) {
         error.statusCode = 403;
-        next(error);
-        return;
+        return next(error);
     }
     try {
         const response = await repository.insert(value);
         res.status(200).json(response);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 });
 
@@ -80,14 +78,13 @@ router.get('/users/:id', async (req, res, next) => {
         Joi.attempt(id, Joi.number().integer());
     } catch (error) {
         error.statusCode = 403;
-        next(error);
-        return;
+        return next(error);
     }
     try {
         response = await repository.read({ id });
         res.json(response);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 });
 
@@ -95,29 +92,27 @@ router.get('/users', async (req, res, next) => {
     const { value, error } = userSchema.validate(req.query);
     if (error) {
         error.statusCode = 403;
-        next(error);
-        return;
+        return next(error);
     }
     try {
         const response = await user.read(value);
         res.json(response);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 });
 
-router.post('/user', async (req, res, next) => {
+router.post('/user', auth, async (req, res, next) => {
     const { error, value } = user.schema.validate(req.body);
     if (error) {
         error.statusCode = 403;
-        next(error);
-        return;
+        return next(error);
     }
     try {
         await user.insert(value);
         res.status(200).end();
     } catch (error) {
-        next(error);
+        return next(error);
     }
 });
 
@@ -131,45 +126,42 @@ router.get('/contribution', async (req, res, next) => {
         Joi.attempt(repository, repositorySchema);
     } catch (error) {
         error.statusCode = 403;
-        next(error);
-        return;
+        return next(error);
     }
     try {
         const response = await contribution.read({ user, repository });
         res.json(response);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 });
 
-router.post('/contribution', async (req, res, next) => {
+router.post('/contribution', auth, async (req, res, next) => {
     const { value, error } = contribution.schema.validate(req.body);
     if (error) {
         error.statusCode = 403;
-        next(error);
-        return;
+        return next(error);
     }
     try {
         await contribution.insert(value);
         res.status(200).end();
     } catch (error) {
-        next(error);
+        return next(error);
     }
 });
 
-router.put('/contribution', async (req, res, next) => {
+router.put('/contribution', auth, async (req, res, next) => {
     const { value, error } = contribution.schema.validate(req.body);
     if (error) {
         error.statusCode = 403;
-        next(error);
-        return;
+        return next(error);
     }
 
     try {
         await contribution.insertOrReplace(value);
         res.status(200).end();
     } catch (error) {
-        next(error);
+        return next(error);
     }
 });
 
