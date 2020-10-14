@@ -12,8 +12,8 @@ Polls is a simple API allowing consumers to view polls and vote in them.
 ### Signin [POST]
 
 + Attributes
-    + username (string)
-    + password (string)
+    + username (string, required)
+    + password (string, required)
 
 + Request
 
@@ -39,8 +39,8 @@ Polls is a simple API allowing consumers to view polls and vote in them.
 ### Signup [POST]
 
 + Attributes
-    + username (string)
-    + password (string)
+    + username (string, required)
+    + password (string, required)
 
 + Request
 
@@ -113,10 +113,10 @@ Polls is a simple API allowing consumers to view polls and vote in them.
 ### Insert [POST]
 
 + Attributes
-    + id (string)
-    + login (string)
-    + avatar_url (string)
-    + html_url (string)
+    + id (string, required)
+    + login (string, required)
+    + avatar_url (string, required)
+    + html_url (string, required)
 
 + Request
     
