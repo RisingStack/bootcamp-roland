@@ -8,10 +8,7 @@ const schema = Joi.object({
     line_count: Joi.number().integer().required(),
 });
 
-async function insert(data) {
-    const response = await db('contribution').insert(data);
-    return response;
-}
+const insert = (data) => db('contribution').insert(data);
 
 async function insertOrReplace({ repository, user, line_count }) {
     Joi.assert({ repository, user, line_count }, schema);

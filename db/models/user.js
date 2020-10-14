@@ -7,15 +7,9 @@ const schema = Joi.object({
     html_url: Joi.string().uri(),
 });
 
-async function insert(data) {
-    const response = await db('user').insert(data);
-    return response;
-}
+const insert = data => db('user').insert(data);
 
-async function read(param = { id, login } = {}) {
-    const response = await db('user').where(param).select();
-    return response;
-}
+const read = (param = { id, login } = {}) => db('user').where(param).select();
 
 module.exports = {
     insert,

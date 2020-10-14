@@ -10,15 +10,9 @@ const schema = Joi.object({
     language: Joi.string()
 });
 
-async function insert(data) {
-    const response = await db('repository').insert(data);
-    return response;
-}
+const insert = data => db('repository').insert(data);
 
-async function read(params) {
-    const response = await db('repository').where(params).select();
-    return response;
-}
+const read = params => db('repository').where(params).select();
 
 module.exports = {
     insert,
