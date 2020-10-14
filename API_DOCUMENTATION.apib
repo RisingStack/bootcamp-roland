@@ -11,6 +11,10 @@ Polls is a simple API allowing consumers to view polls and vote in them.
 
 ### Signin [POST]
 
++ Attributes
+    + username (string)
+    + password (string)
+
 + Request
 
         {
@@ -33,6 +37,10 @@ Polls is a simple API allowing consumers to view polls and vote in them.
 ## Signup [/signUp]
 
 ### Signup [POST]
+
++ Attributes
+    + username (string)
+    + password (string)
 
 + Request
 
@@ -103,6 +111,12 @@ Polls is a simple API allowing consumers to view polls and vote in them.
 ## Insert [/v1/user]
 
 ### Insert [POST]
+
++ Attributes
+    + id (string)
+    + login (string)
+    + avatar_url (string)
+    + html_url (string)
 
 + Request
     
@@ -180,6 +194,14 @@ Polls is a simple API allowing consumers to view polls and vote in them.
 
 ### Insert [POST]
 
++ Attributes
+    + owner (string, required)
+    + full_name (string, required)
+    + description (string, required)
+    + html_url (string, required)
+    + language (string, required) 
+    + stargazers_count (number, required)
+
 + Request
     
         { 
@@ -235,6 +257,11 @@ Polls is a simple API allowing consumers to view polls and vote in them.
 
 ### Insert [POST]
 
++ Attributes
+    + user (number, required)
+    + repository (number, required)
+    + line_count (number, required)
+
 + Request
     
         { 
@@ -250,6 +277,11 @@ Polls is a simple API allowing consumers to view polls and vote in them.
 + Response 500 (application/json)
 
 ### Update or Insert [PUT]
+
++ Attributes
+    + user (number, required)
+    + repository (number, required)
+    + line_count (number, required)
 
 + Request
     
