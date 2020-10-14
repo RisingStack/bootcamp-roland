@@ -5,7 +5,7 @@ const config = require('./config');
 
 function authMiddleware(req, res, next) {
     try {
-        if (!req.headers.authorization) throw Error;
+        if (!req.headers.authorization) throw Error('Authentication failed');
         const token = req.headers.authorization.replace(/Bearer\s*/, '');
         jwt.verify(token, config.jwt);
         return next();
