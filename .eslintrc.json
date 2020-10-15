@@ -1,11 +1,3 @@
 {
-    "parserOptions": {
-        "ecmaVersion": 2021
-    },
-    "rules": {
-        "no-console": "warn",
-        "semi": ["error", "always"],
-        "quotes": ["error", "single"],
-        "eol-last":"warn"
-    }
+    "extends": "airbnb"
 }
