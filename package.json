@@ -16,6 +16,11 @@
     "seed-test-db": "NODE_ENV=test knex seed:run",
     "eslint": "eslint --fix"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run test-web"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RisingStack/bootcamp-roland.git"
