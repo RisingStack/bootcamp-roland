@@ -8,6 +8,9 @@ function authMiddleware(req, res, next) {
         if (!req.headers.authorization) throw Error('Authentication failed');
         const token = req.headers.authorization.replace(/Bearer\s*/, '');
         jwt.verify(token, config.jwt);
+
+        logger.debug('[authenticator.js]', token);
+
         return next();
     } catch (error) {
         error.statusCode = 401;
