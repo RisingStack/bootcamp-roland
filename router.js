@@ -36,7 +36,7 @@ router.get('/repository/:id', async (req, res, next) => {
   }
   try {
     const response = await repositoryModel.read({ id });
-    res.json(response);
+    return res.json(response);
   } catch (error) {
     return next(error);
   }
@@ -50,7 +50,7 @@ router.get('/repository', async (req, res, next) => {
   }
   try {
     const response = await repositoryModel.read(value);
-    res.json(response);
+    return res.json(response);
   } catch (error) {
     return next(error);
   }
@@ -64,7 +64,7 @@ router.post('/repository', auth, async (req, res, next) => {
   }
   try {
     const response = await repositoryModel.insert(value);
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error) {
     return next(error);
   }
@@ -81,7 +81,7 @@ router.get('/users/:id', async (req, res, next) => {
   }
   try {
     const response = await repositoryModel.read({ id });
-    res.json(response);
+    return res.json(response);
   } catch (error) {
     return next(error);
   }
@@ -95,7 +95,7 @@ router.get('/users', async (req, res, next) => {
   }
   try {
     const response = await userModel.read(value);
-    res.json(response);
+    return res.json(response);
   } catch (error) {
     return next(error);
   }
@@ -109,7 +109,7 @@ router.post('/user', auth, async (req, res, next) => {
   }
   try {
     await userModel.insert(value);
-    res.status(200).end();
+    return res.status(200).send();
   } catch (error) {
     return next(error);
   }
@@ -129,7 +129,7 @@ router.get('/contribution', async (req, res, next) => {
   }
   try {
     const response = await contributionModel.read({ user, repository });
-    res.json(response);
+    return res.json(response);
   } catch (error) {
     return next(error);
   }
@@ -147,7 +147,7 @@ router.post('/contribution', auth, async (req, res, next) => {
       repository: value.repository,
       line_count: value.lineCount,
     });
-    res.status(200).end();
+    return res.sendStatus(200);
   } catch (error) {
     return next(error);
   }
@@ -162,7 +162,7 @@ router.put('/contribution', auth, async (req, res, next) => {
 
   try {
     await contributionModel.insertOrReplace(value);
-    res.status(200).end();
+    return res.sendStatus(200);
   } catch (error) {
     return next(error);
   }
