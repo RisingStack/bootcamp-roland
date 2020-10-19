@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+/* eslint func-names: "off" */
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
@@ -9,7 +11,7 @@ const db = require('./db/db');
 const contribution = require('./db/models/contribution');
 const config = require('./config');
 
-const should = chai.should();
+const should = chai.should(); // eslint-disable-line no-unused-vars
 const apiRoute = '/api';
 const apiRouteV1 = `${apiRoute}/v1`;
 
@@ -21,37 +23,35 @@ const mockRepo = {
   description: 'Bela Todo list',
   html_url: 'https://github.com/',
   language: 'eng',
-  stargazers_count: 5
+  stargazers_count: 5,
 };
 
 const mockUser = {
   login: 'bela',
   avatar_url: 'https://github.com/avatar',
-  html_url: 'https://github.com/avatar'
+  html_url: 'https://github.com/avatar',
 };
 
 const mockContribution = {
   user: 1,
   repository: 1,
-  line_count: 50
+  lineCount: 50,
 };
 
-describe('Web instance', () => {
+const token = jwt.sign({}, config.jwt);
 
-  const token = jwt.sign({}, config.jwt);
-
-  describe('GET /hello', () => {
-    it('returns \'Hello World ! \'', async () => {
+describe('Web instance', function () {
+  describe('GET /hello', function () {
+    it('returns \'Hello World ! \'', async function () {
       const response = await chai.request(server).get(`${apiRouteV1}/hello`);
       response.should.have.status(200);
       response.text.should.equal('Hello World !');
     });
   });
 
-  describe('GET /repository', async () => {
-
-    describe('/:id', () => {
-      it('returns a repository with given ID', async () => {
+  describe('GET /repository', function () {
+    describe('/:id', function () {
+      it('returns a repository with given ID', async function () {
         const id = await db('repository').insert(mockRepo).returning('id');
         const response = await chai.request(server).get(`${apiRouteV1}/repository/${id}`);
         response.should.have.status(200);
@@ -59,15 +59,15 @@ describe('Web instance', () => {
       });
     });
 
-    describe('/:id with invalid path variable', () => {
-      it('returns 403', async () => {
+    describe('/:id with invalid path variable', function () {
+      it('returns 403', async function () {
         const response = await chai.request(server).get(`${apiRouteV1}/repository/asd`);
         response.should.have.status(403);
       });
     });
 
-    describe('?id=', () => {
-      it('returns a repository with given ID', async () => {
+    describe('?id=', function () {
+      it('returns a repository with given ID', async function () {
         const id = await db('repository').insert(mockRepo).returning('id');
         const response = await chai.request(server).get(`${apiRouteV1}/repository?id=${id}`);
         response.should.have.status(200);
@@ -75,16 +75,16 @@ describe('Web instance', () => {
       });
     });
 
-    describe('?id= with invalid query variable', () => {
-      it('returns 403', async () => {
+    describe('?id= with invalid query variable', function () {
+      it('returns 403', async function () {
         const response = await chai.request(server).get(`${apiRouteV1}/repository?id=asd`);
         response.should.have.status(403);
       });
     });
   });
 
-  describe('POST /repository', () => {
-    it('returns the inserted object', async () => {
+  describe('POST /repository', function () {
+    it('returns the inserted object', async function () {
       const response = await chai.request(server)
         .post(`${apiRouteV1}/repository`)
         .type('application/json')
@@ -94,7 +94,7 @@ describe('Web instance', () => {
       response.should.have.status(200);
       repo[0].should.include(mockRepo);
     });
-    it('returns 403', async () => {
+    it('returns 403', async function () {
       const response = await chai.request(server)
         .post(`${apiRouteV1}/repository`)
         .set('Authorization', `Bearer ${token}`)
@@ -104,28 +104,29 @@ describe('Web instance', () => {
     });
   });
 
-  describe('/contribution', () => {
-
-    before('before hook', async () => {
+  describe('/contribution', function () {
+    before('before hook', async function () {
       await db('user').insert(mockUser);
       await db('repository').insert(mockRepo);
-      await db('contribution').insert(mockContribution);
+      await db('contribution').insert({
+        line_count: mockContribution.lineCount,
+        user: mockContribution.user,
+        repository: mockContribution.repository,
+      });
     });
 
-    describe('GET /contribution', () => {
-
-      it('returns all users contributed to a single repository', async () => {
+    describe('GET /contribution', function () {
+      it('returns all users contributed to a single repository', async function () {
         const response = await chai.request(server).get(`${apiRouteV1}/contribution?login=${mockUser.login}`);
         const { user: userResp, repository: repositoryResp } = response.body[0];
 
         userResp.should.include({ login: mockUser.login });
-        repositoryResp.should.include({ full_name: mockRepo.full_name });
+        repositoryResp.should.include({ fullName: mockRepo.full_name });
       });
     });
 
-    describe('POST /contribution', () => {
-      it('returns inserted contribution', async () => {
-
+    describe('POST /contribution', function () {
+      it('returns inserted contribution', async function () {
         await db('contribution').delete(mockContribution);
 
         const postResponse = await chai.request(server)
@@ -134,16 +135,15 @@ describe('Web instance', () => {
           .type('application/json')
           .send(mockContribution);
 
-        const readResponse = await contribution.read({ id: mockUser.id });
+        const { id } = await db('user').where({ login: mockUser.login }).select('id').first();
+        const readResponse = await contribution.read({ user: { id } });
         const { user: userResp, repository: repositoryResp } = readResponse[0];
 
         postResponse.should.have.status(200);
         userResp.should.include({ login: mockUser.login });
-        repositoryResp.should.include({ full_name: mockRepo.full_name });
-
+        repositoryResp.should.include({ fullName: mockRepo.full_name });
       });
-      it('returns 401', async () => {
-
+      it('returns 401', async function () {
         await db('contribution').delete(mockContribution);
 
         const response = await chai.request(server)

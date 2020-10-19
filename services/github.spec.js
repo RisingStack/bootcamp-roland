@@ -1,12 +1,14 @@
+/* eslint-env mocha */
+/* eslint func-names: "off" */
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const nock = require('nock');
 const chaiAsPromised = require('chai-as-promised');
 
 const config = require('../config');
-const github = require('../services/github');
+const github = require('./github');
 
-const should = chai.should();
+const should = chai.should(); // eslint-disable-line no-unused-vars
 
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);
@@ -43,16 +45,16 @@ const getContributorsQueryString = `query collaboratorsQuery($owner:String!,$rep
     }
   }`;
 
-describe('Github service', () => {
-  const githubAPIMock = nock('https://api.github.com');
+const githubAPIMock = nock('https://api.github.com');
 
-  it('should use Authorization header and a token provided from config.js', async () => {
+describe('Github service', function () {
+  it('should use Authorization header and a token provided from config.js', async function () {
     const scope = githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql').reply(200, { data: {} });
     await github.searchRepositories('WordsMemorizer');
     scope.done();
   });
 
-  describe('Invoking getContributors', () => {
+  describe('Invoking getContributors', function () {
     const mockResponse = {
       repository: {
         collaborators: {
@@ -61,47 +63,47 @@ describe('Github service', () => {
               id: 'TEST_ID',
               login: 'testLogin',
               url: 'https://testurl.test',
-              avatarUrls: 'valami url az avatarhoz'
-            }
-          }]
-        }
-      }
+              avatarUrls: 'valami url az avatarhoz',
+            },
+          }],
+        },
+      },
     };
 
-    it('should return dummy response', async () => {
+    it('should return dummy response', async function () {
       const scope = githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
       const response = await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
       response.should.deep.equal(mockResponse);
+      scope.done();
     });
 
-    it('should include "$owner" and "$repoName" query variable', async () => {
+    it('should include "$owner" and "$repoName" query variable', async function () {
       const scope = githubAPIMock.post('/graphql', (body) => (body.query && body.query === getContributorsQueryString)).reply(200, { data: mockResponse });
       await github.getContributors('WordsMemorizer');
       scope.done();
     });
   });
 
-
-  describe('Invoking searchRepositories', () => {
+  describe('Invoking searchRepositories', function () {
     const mockResponse = {
       createdAt: '2020',
       collaborators: {
         totalCount: 1,
-        edges: [{ node: { login: 'bela' } }]
-      }
+        edges: [{ node: { login: 'bela' } }],
+      },
     };
 
-    it('should throw "queryString is a mandatory parameter"', async () => {
+    it('should throw "queryString is a mandatory parameter"', async function () {
       return github.searchRepositories().should.be.rejectedWith('queryString is a mandatory parameter');
     });
 
-    it('should return dummy response', async () => {
+    it('should return dummy response', async function () {
       githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
       const response = await github.searchRepositories('WordsMemorizer');
       response.should.deep.equal(mockResponse);
     });
 
-    it('should include "$queryString" query variable', async () => {
+    it('should include "$queryString" query variable', async function () {
       const scope = githubAPIMock.post('/graphql', body => (body.query && body.query === searchRepositoryQueryString)).reply(200, { data: mockResponse });
       await github.searchRepositories('WordsMemorizer');
       scope.done();
