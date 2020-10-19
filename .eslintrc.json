@@ -1,4 +1,11 @@
 {
-    "extends": "airbnb",
-    "indent": ["error", "tab"]
+  "extends": ["airbnb", "plugin:mocha/recommended"],
+  "rules": {
+    "indent": [
+      "error",
+      2 
+    ],
+    "arrow-parens": [0, "as-needed"],
+    "prefer-arrow-callback":"off"
+  }
 }
