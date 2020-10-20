@@ -1,5 +1,9 @@
 {
   "extends": ["airbnb", "plugin:mocha/recommended"],
+  "env": {
+    "node": true,
+    "mocha": true
+  },
   "rules": {
     "indent": [
       "error",

@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 /* eslint func-names: "off" */
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -8,7 +7,7 @@ const chaiAsPromised = require('chai-as-promised');
 const config = require('../config');
 const github = require('./github');
 
-const should = chai.should(); // eslint-disable-line no-unused-vars
+chai.should();
 
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);

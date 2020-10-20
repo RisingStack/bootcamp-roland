@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 /* eslint func-names: "off" */
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -11,7 +10,7 @@ const db = require('./db/db');
 const contribution = require('./db/models/contribution');
 const config = require('./config');
 
-const should = chai.should(); // eslint-disable-line no-unused-vars
+chai.should();
 const apiRoute = '/api';
 const apiRouteV1 = `${apiRoute}/v1`;
 
@@ -42,7 +41,7 @@ const token = jwt.sign({}, config.jwt);
 
 describe('Web instance', function () {
   describe('GET /hello', function () {
-    it('returns \'Hello World ! \'', async function () {
+    it("returns 'Hello World ! ", async function () {
       const response = await chai.request(server).get(`${apiRouteV1}/hello`);
       response.should.have.status(200);
       response.text.should.equal('Hello World !');
