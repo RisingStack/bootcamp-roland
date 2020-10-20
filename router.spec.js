@@ -10,7 +10,6 @@ const db = require('./db/db');
 const contribution = require('./db/models/contribution');
 const config = require('./config');
 
-chai.should();
 const apiRoute = '/api';
 const apiRouteV1 = `${apiRoute}/v1`;
 
