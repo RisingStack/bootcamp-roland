@@ -2,8 +2,6 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
 
-process.env.NODE_ENV = 'test';
-
 const server = require('./index');
 const db = require('./db/db');
 const contribution = require('./db/models/contribution');
