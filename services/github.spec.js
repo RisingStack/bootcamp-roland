@@ -4,9 +4,9 @@ const nock = require('nock');
 const chaiAsPromised = require('chai-as-promised');
 
 const config = require('../config');
-const github = require('../services/github');
+const github = require('./github');
 
-const should = chai.should();
+chai.should();
 
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);
@@ -43,9 +43,9 @@ const getContributorsQueryString = `query collaboratorsQuery($owner:String!,$rep
     }
   }`;
 
-describe('Github service', () => {
-  const githubAPIMock = nock('https://api.github.com');
+const githubAPIMock = nock('https://api.github.com');
 
+describe('Github service', () => {
   it('should use Authorization header and a token provided from config.js', async () => {
     const scope = githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql').reply(200, { data: {} });
     await github.searchRepositories('WordsMemorizer');
@@ -61,17 +61,18 @@ describe('Github service', () => {
               id: 'TEST_ID',
               login: 'testLogin',
               url: 'https://testurl.test',
-              avatarUrls: 'valami url az avatarhoz'
-            }
-          }]
-        }
-      }
+              avatarUrls: 'valami url az avatarhoz',
+            },
+          }],
+        },
+      },
     };
 
     it('should return dummy response', async () => {
       const scope = githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
       const response = await github.getContributors('RisingStack', 'risingstack-bootcamp-v2');
       response.should.deep.equal(mockResponse);
+      scope.done();
     });
 
     it('should include "$owner" and "$repoName" query variable', async () => {
@@ -81,19 +82,16 @@ describe('Github service', () => {
     });
   });
 
-
   describe('Invoking searchRepositories', () => {
     const mockResponse = {
       createdAt: '2020',
       collaborators: {
         totalCount: 1,
-        edges: [{ node: { login: 'bela' } }]
-      }
+        edges: [{ node: { login: 'bela' } }],
+      },
     };
 
-    it('should throw "queryString is a mandatory parameter"', async () => {
-      return github.searchRepositories().should.be.rejectedWith('queryString is a mandatory parameter');
-    });
+    it('should throw "queryString is a mandatory parameter"', () => (github.searchRepositories().should.be.rejectedWith('queryString is a mandatory parameter')));
 
     it('should return dummy response', async () => {
       githubAPIMock.post('/graphql').reply(200, { data: mockResponse });

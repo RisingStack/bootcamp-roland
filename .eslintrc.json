@@ -1,11 +1,15 @@
 {
-    "parserOptions": {
-        "ecmaVersion": 2021
-    },
-    "rules": {
-        "no-console": "warn",
-        "semi": ["error", "always"],
-        "quotes": ["error", "single"],
-        "eol-last":"warn"
-    }
+  "extends": "airbnb-base",
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "indent": [
+      "error",
+      2 
+    ],
+    "arrow-parens": [0, "as-needed"],
+    "prefer-arrow-callback":"off"
+  }
 }

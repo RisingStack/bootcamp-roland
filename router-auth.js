@@ -8,42 +8,42 @@ const auth = require('./authenticator');
 const config = require('./config');
 
 const appUserSchema = Joi.object({
-    username: Joi.string().required(),
-    password: Joi.string().required(),
+  username: Joi.string().required(),
+  password: Joi.string().required(),
 });
 
 router.post('/signUp', async (req, res, next) => {
-    try {
-        const { username, password } = req.body;
-        Joi.assert({ username, password }, appUserSchema);
-        const hashedPassword = bcrypt.hashSync(password, 12);
-        await appUser.insert({ username, password: hashedPassword });
+  try {
+    const { username, password } = req.body;
+    Joi.assert({ username, password }, appUserSchema);
+    const hashedPassword = bcrypt.hashSync(password, 12);
+    await appUser.insert({ username, password: hashedPassword });
 
-        const token = jwt.sign({ username }, config.jwt);
+    const token = jwt.sign({ username }, config.jwt);
 
-        res.header({ Authorization: `Bearer ${token}` }).send('Signed up!');
-    } catch (error) {
-        next(error);
-    }
+    res.header({ Authorization: `Bearer ${token}` }).send('Signed up!');
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post('/signIn', async (req, res, next) => {
-    try {
-        const { username, password } = req.body;
-        Joi.assert({ username, password }, appUserSchema);
+  try {
+    const { username, password } = req.body;
+    Joi.assert({ username, password }, appUserSchema);
 
-        const response = await appUser.read(username);
-        if (!bcrypt.compareSync(password, response[0].password)) throw 'Invalid credentials!';
+    const response = await appUser.read(username);
+    if (!bcrypt.compareSync(password, response[0].password)) throw Error('Invalid credentials!');
 
-        const token = jwt.sign({ username }, config.jwt);
-        res.header({ Authorization: `Bearer ${token}` }).send('Signed in!');
-    } catch (error) {
-        next(error);
-    }
+    const token = jwt.sign({ username }, config.jwt);
+    res.header({ Authorization: `Bearer ${token}` }).send('Signed in!');
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.get('/signOut', auth, (req, res) => {
-    res.send('Signed out!');
+  res.send('Signed out!');
 });
 
 module.exports = router;
