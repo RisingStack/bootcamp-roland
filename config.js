@@ -8,6 +8,7 @@ const config = {
   dbUser: process.env.NODE_ENV === 'test' ? 'postgres' : process.env.DBUSER,
   dbPassword: process.env.NODE_ENV === 'test' ? 'mysecretpassword' : process.env.DBPASSWORD,
   db: process.env.NODE_ENV === 'test' ? 'test' : process.env.DB,
+  redisPort: process.env.REDIS_PORT,
   logger: {
     level: process.env.LOG_LEVEL,
   },

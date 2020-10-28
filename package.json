@@ -13,7 +13,8 @@
     "migrate-up": "knex migrate:up",
     "migrate-down": "knex migrate:down",
     "seed-db": "knex seed:run",
-    "seed-test-db": "NODE_ENV=test knex seed:run"
+    "seed-test-db": "NODE_ENV=test knex seed:run",
+    "trigger": "node ./worker/trigger.js"
   },
   "husky": {
     "hooks": {
@@ -45,7 +46,8 @@
     "lodash": "4.17.20",
     "pg": "8.3.3",
     "pino": "6.7.0",
-    "pino-pretty": "4.3.0"
+    "pino-pretty": "4.3.0",
+    "redis": "^3.0.2"
   },
   "devDependencies": {
     "chai": "4.2.0",
