@@ -16,29 +16,41 @@ const graphQLClient = new GraphQLClient(endpoint, {
   },
 });
 
-exports.searchRepositories = async (queryString) => {
-  if (!queryString) {
-    throw Error('queryString is a mandatory parameter');
-  }
+exports.searchRepositories = async ({ queryString, first }) => {
+  // if (!queryString) {
+  //   throw Error('queryString is a mandatory parameter');
+  // }
 
-  const query = `query search($queryString:String!){ 
-    search(query: $queryString, type: REPOSITORY, first: 10) {
+  const query = `query search($queryString:String!, $first:Int){ 
+    search(query: $queryString, type: REPOSITORY, first: $first) {
       repositoryCount
       edges {
         node {
-        ... on RepositoryInfo {
+        ... on Repository {
           name
+          description
+          homepageUrl
+          stargazerCount
+          languages(first: 1) {
+            edges {
+              node {
+                name
+              }
+            }
+          }
           createdAt
           owner {
             id
             login
+            avatarUrl
+            url
           }
         }
       }
     }}
   }`;
 
-  const varibale = { queryString };
+  const varibale = { queryString, first };
 
   const response = await graphQLClient.request(query, varibale);
   return response;
