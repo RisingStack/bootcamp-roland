@@ -14,7 +14,7 @@
     "migrate-down": "knex migrate:down",
     "seed-db": "knex seed:run",
     "seed-test-db": "NODE_ENV=test knex seed:run",
-    "trigger": "node ./worker/trigger.js"
+    "trigger": "node ./scripts/trigger.js"
   },
   "husky": {
     "hooks": {
