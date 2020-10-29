@@ -2,8 +2,8 @@ const redis = require('redis');
 
 const redisConfig = require('./config');
 const logger = require('../logger');
-const {onRepository} = require('./handlers/repositroy');
-const {onContribution} = require('./handlers/contribution');
+const { onRepository } = require('./handlers/repositroy');
+const { onContribution } = require('./handlers/contribution');
 
 const channels = {
   trigger: 'trigger',
@@ -11,11 +11,10 @@ const channels = {
   contribution: 'repository',
 };
 
-const initPublisher = () => (redis.createClient(redisConfig));
-const initSubscriber = () => (redis.createClient(redisConfig));
+const initRedisClient = () => (redis.createClient(redisConfig));
 
-const repositorySubscriber = initPublisher();
-const contributionSubscriber = initSubscriber();
+const repositorySubscriber = initRedisClient();
+const contributionSubscriber = initRedisClient();
 
 function initChannels() {
   repositorySubscriber.subscribe(channels.trigger, () => logger.info('Repository channel subscribed'));
@@ -36,6 +35,5 @@ function initChannels() {
 module.exports = {
   channels,
   initChannels,
-  initPublisher,
-  initSubscriber,
+  initRedisClient,
 };

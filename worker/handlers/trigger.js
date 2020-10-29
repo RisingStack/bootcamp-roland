@@ -1,10 +1,10 @@
 const logger = require('../../logger');
-const { initPublisher, channels } = require('../index');
+const { initRedisClient, channels } = require('../index');
 
 function onTrigger(message) {
   if (!message) throw Error('Misisng query parameter');
 
-  const client = initPublisher();
+  const client = initRedisClient();
   client.publish(channels.trigger, message, () => logger.info(`Trigger message sent to ${channels.trigger} channel`));
 }
 

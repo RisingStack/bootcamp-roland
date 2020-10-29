@@ -24,10 +24,10 @@ const repositorySchema = Joi.object({
 
 router.get('/hello', (req, res) => res.send('Hello World !'));
 
-// Trigger
-router.post('/trigger', (req, res) => {
-  // Redis
-});
+// // Trigger
+// router.post('/trigger', (req, res) => {
+//   // Redis
+// });
 
 // Repository
 router.get('/repository/:id', async (req, res, next) => {
