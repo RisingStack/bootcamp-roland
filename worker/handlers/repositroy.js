@@ -1,12 +1,9 @@
-const logger = require('../../logger');
-// const { initRedisClient, channels } = require('../index');
 const { searchRepositories } = require('../../services/github');
 const repositoryModel = require('../../db/models/repository');
 const userModel = require('../../db/models/user');
 
 async function onRepository(message) {
   const { search } = await searchRepositories({ queryString: message });
-  logger.info(JSON.stringify(search.edges, null, '-'));
 
   const repositories = search.edges.map(async ({ node }) => {
     const user = {
@@ -19,7 +16,6 @@ async function onRepository(message) {
     if (userResult.error) throw Error(userResult.error);
 
     let userToInsert = await userModel.read(user);
-    logger.info(JSON.stringify(userToInsert, null, '-'));
 
     if (!userToInsert.length) {
       userToInsert = await userModel.insert(user);
@@ -43,10 +39,7 @@ async function onRepository(message) {
   Promise.all(repositories)
     .then(repos => {
       repositoryModel.insert(repos);
-      // console.log(initRedisClient);
-      // const repositoryPublisher = initRedisClient();
-      // repositoryPublisher.publish(channels.contribution, JSON.stringify(repos),
-      //   () => logger.info(`Sending message to ${channels.contribution} channel`));
+      return repos;
     }).catch(error => { throw Error(error); });
 }
 
