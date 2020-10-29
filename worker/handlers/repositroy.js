@@ -4,7 +4,7 @@ const repositoryModel = require('../../db/models/repository');
 const userModel = require('../../db/models/user');
 
 async function onRepository(message) {
-  const { search } = await searchRepositories({ queryString: message, first: 1 });
+  const { search } = await searchRepositories({ queryString: message });
   logger.info(JSON.stringify(search.edges, null, '-'));
 
   const repositories = search.edges.map(async ({ node }) => {
@@ -17,10 +17,15 @@ async function onRepository(message) {
     const userResult = userModel.schema.validate(user);
     if (userResult.error) throw Error(userResult.error);
 
-    const insertedUser = await userModel.insert(user);
+    let userToInsert = await userModel.read(user);
+    logger.info(JSON.stringify(userToInsert, null, '-'));
+
+    if (userToInsert.length) {
+      userToInsert = await userModel.insert(user);
+    }
 
     const repository = {
-      owner: insertedUser[0].id,
+      owner: userToInsert[0].id,
       full_name: node.name,
       stargazers_count: node.stargazerCount,
       html_url: node.homepageUrl,
