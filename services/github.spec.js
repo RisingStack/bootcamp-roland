@@ -103,7 +103,7 @@ describe('Github service', () => {
       },
     };
 
-    it('should throw "queryString is a mandatory parameter"', () => (github.searchRepositories().should.be.rejectedWith('queryString is a mandatory parameter')));
+    it('should throw "queryString is a mandatory parameter"', () => (github.searchRepositories('').should.be.rejectedWith('queryString is a mandatory parameter')));
 
     it('should return dummy response', async () => {
       githubAPIMock.post('/graphql').reply(200, { data: mockResponse });

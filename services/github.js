@@ -19,7 +19,7 @@ const graphQLClient = new GraphQLClient(endpoint, {
 exports.searchRepositories = async (params) => {
   const { queryString, first = 5 } = params;
 
-  if (!queryString) {
+  if (!params.queryString) {
     throw Error('queryString is a mandatory parameter');
   }
 
