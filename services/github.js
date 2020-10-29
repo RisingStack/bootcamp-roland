@@ -1,5 +1,4 @@
 const { GraphQLClient } = require('graphql-request');
-const Joi = require('joi');
 // graphgl-request 3.1.0 workaround
 // https://github.com/prisma-labs/graphql-request/issues/206
 const { Headers } = require('cross-fetch');
@@ -17,14 +16,8 @@ const graphQLClient = new GraphQLClient(endpoint, {
   },
 });
 
-exports.searchRepositories = async ({ queryString, first }) => {
-  // eslint-disable-next-line
-  if (!first) first = 5;
-
-  Joi.assert({ queryString, first }, Joi.object({
-    queryString: Joi.string().required(),
-    first: Joi.number().required(),
-  }));
+exports.searchRepositories = async (params) => {
+  const { queryString, first = 5 } = params;
 
   if (!queryString) {
     throw Error('queryString is a mandatory parameter');
