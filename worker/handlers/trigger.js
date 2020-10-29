@@ -6,6 +6,7 @@ function onTrigger(message) {
 
   const client = initRedisClient();
   client.publish(channels.trigger, message, () => logger.info(`Trigger message sent to ${channels.trigger} channel`));
+  client.quit();
 }
 
 module.exports = {
