@@ -9,7 +9,7 @@ async function up(knex) {
   try {
     await knex.schema.createTable(userTable, (table) => {
       table.increments('id').primary();
-      table.string('login', 255).notNullable();
+      table.string('login', 255).notNullable().unique();
       table.string('avatar_url', 255);
       table.string('html_url', 255);
     });
