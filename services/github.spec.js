@@ -42,7 +42,7 @@ const searchRepositoryQueryString = `query search($queryString:String!, $first:I
 
 const getContributorsQueryString = `query collaboratorsQuery($owner:String!,$repoName:String!){
     repository(owner: $owner, name: $repoName) {
-      collaborators(first:100, affiliation: DIRECT) {
+      collaborators(first:10) {
         edges {
           node {
             id
