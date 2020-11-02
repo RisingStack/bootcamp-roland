@@ -18,8 +18,8 @@ const repositoryPublish = initRedisClient();
 const contributionSubscriber = initRedisClient();
 
 function initChannels() {
-  repositorySubscriber.subscribe(channels.trigger, () => logger.info('Repository channel subscribed'));
-  contributionSubscriber.subscribe(channels.repository, () => logger.info('Contribution channel subscribed'));
+  repositorySubscriber.subscribe(channels.repository, () => logger.info('Repository channel subscribed'));
+  contributionSubscriber.subscribe(channels.contribution, () => logger.info('Contribution channel subscribed'));
 
   repositorySubscriber.on('message', async (channel, message) => {
     logger.info(`[REPOSITORY] Message received on ${channel} channel`);
