@@ -10,7 +10,7 @@ const schema = Joi.object({
   language: Joi.string(),
 });
 
-const insert = data => db('repository').insert(data);
+const insert = data => db('repository').insert(data).returning('*');
 
 const read = params => db('repository').where(params).select();
 

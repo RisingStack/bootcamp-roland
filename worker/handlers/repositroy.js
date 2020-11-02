@@ -39,8 +39,8 @@ const onRepository = async (message) => (
 
     Promise.all(repositories)
       .then(resolvedRepos => {
-        repositoryModel.insert(resolvedRepos);
-        resolve(resolvedRepos);
+        const insertedRepos = repositoryModel.insert(resolvedRepos);
+        resolve(insertedRepos);
       }).catch(error => reject(error));
   })
 );

@@ -1,15 +1,20 @@
 const logger = require('../../logger');
 const userModel = require('../../db/models/user');
+const contributionModel = require('../../db/models/contribution');
 const { getContributors } = require('../../services/github');
 
 async function onContribution(message) {
   const repositories = JSON.parse(message);
+  logger.info(JSON.stringify(repositories));
 
   repositories.forEach(async repository => {
     const repositoryName = repository.full_name;
+
     logger.info(`repositoryName: ${repositoryName}`);
+
     const dbResponse = await userModel.read({ id: repository.owner });
     const owner = dbResponse[0];
+
     logger.info(`userLogin: ${owner.login}`);
 
     const githubResponse = await getContributors(owner.login, repositoryName);
@@ -17,20 +22,26 @@ async function onContribution(message) {
 
     logger.info(JSON.stringify(collaborators));
 
-    const usersToInsert = collaborators.map(async (collaborator) => {
+    collaborators.map(async (collaborator) => {
       const user = {
         login: collaborator.node.login,
         avatar_url: collaborator.node.avatarUrl,
         html_url: collaborator.node.url,
       };
 
-      const existingUser = await userModel.read(user);
-      if (!existingUser.length) {
-        return user;
+      let response = await userModel.read(user);
+      if (!response.length) {
+        response = await userModel.insert(user);
       }
-    });
 
-    Promise.all(usersToInsert).then((resolvedUsers) => userModel.insert(resolvedUsers));
+      const contribution = {
+        user: response[0].id,
+        repository: repository.id,
+        lineCount: 0,
+      };
+
+      contributionModel.insertOrReplace(contribution);
+    });
   });
 }
 
