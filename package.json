@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "lint-check": "eslint \"**/*.js\" --ignore-pattern node_modules/",
+    "linter": "eslint \"**/*.js\" --ignore-pattern node_modules/",
     "test-web": "npm run migrate-test-db && LOG_LEVEL=silent NODE_ENV=test mocha './{!(node_modules)/**/,}*.spec.js' --exit",
     "migrate-db": "knex migrate:latest",
     "migrate-test-db": "NODE_ENV=test npm run migrate-down && NODE_ENV=test npm run migrate-up ",
@@ -18,7 +18,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint-check",
+      "pre-commit": "npm run linter",
       "pre-push": "npm run test-web"
     }
   },
