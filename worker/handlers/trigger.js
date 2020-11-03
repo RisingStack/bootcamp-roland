@@ -1,10 +1,16 @@
+const redis = require('redis');
+
+const redisConfig = require('../config');
 const logger = require('../../logger');
-const { initRedisClient, channels } = require('../index');
+const { channels } = require('../index');
 
 function onTrigger(message) {
-  if (!message) throw Error('Misisng query parameter');
+  if (!message) {
+    logger.info('Misisng query parameter');
+    process.exit(1);
+  }
 
-  const client = initRedisClient();
+  const client = redis.createClient(redisConfig);
   client.publish(channels.repository, message, () => logger.info(`Trigger message sent to ${channels.trigger} channel`));
   client.quit();
 }

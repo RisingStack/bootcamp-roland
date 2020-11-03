@@ -11,11 +11,9 @@ const channels = {
   contribution: 'contribution',
 };
 
-const initRedisClient = () => (redis.createClient(redisConfig));
-
-const repositorySubscriber = initRedisClient();
-const repositoryPublish = initRedisClient();
-const contributionSubscriber = initRedisClient();
+const repositorySubscriber = redis.createClient(redisConfig);
+const repositoryPublish = redis.createClient(redisConfig);
+const contributionSubscriber = redis.createClient(redisConfig);
 
 function initChannels() {
   repositorySubscriber.subscribe(channels.repository, () => logger.info('Repository channel subscribed'));
@@ -38,5 +36,4 @@ function initChannels() {
 module.exports = {
   channels,
   initChannels,
-  initRedisClient,
 };

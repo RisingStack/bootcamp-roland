@@ -1,49 +1,60 @@
 const { searchRepositories } = require('../../services/github');
 const repositoryModel = require('../../db/models/repository');
 const userModel = require('../../db/models/user');
+const logger = require('../../logger');
 
-const onRepository = async (message) => (
-  new Promise(async (resolve, reject) => {
-    const { search } = await searchRepositories({ queryString: message, first: 1 });
+const onRepository = async (message) => {
+  // env = org/repo_name
+  // 1 repository
+  const { search: { edges } } = await searchRepositories({ queryString: message, first: 1 });
 
-    const repositories = search.edges.map(async ({ node }) => {
-      const user = {
-        login: node.owner.login,
-        avatar_url: node.owner.avatarUrl,
-        html_url: node.owner.url,
-      };
+  const repository = edges[0].node;
+  const { owner } = repository;
 
-      const userResult = userModel.schema.validate(user);
-      if (userResult.error) throw Error(userResult.error);
+  logger.info(JSON.stringify(owner));
 
-      let userToInsert = await userModel.read(user);
+  const user = {
+    login: owner.login,
+    avatar_url: owner.avatarUrl,
+    html_url: owner.url,
+  };
 
-      if (!userToInsert.length) {
-        userToInsert = await userModel.insert(user);
-      }
+  logger.info(JSON.stringify(user));
 
-      const repository = {
-        owner: userToInsert[0].id,
-        full_name: node.name,
-        stargazers_count: node.stargazerCount,
-        html_url: node.homepageUrl,
-        description: node.description,
-        language: node.languages.edges[0].node.name,
-      };
+  const userResult = userModel.schema.validate(user);
+  if (userResult.error) {
+    logger.error(userResult.error);
+    process.exit(1);
+  }
 
-      const repositoryResult = repositoryModel.schema.validate(repository);
-      if (repositoryResult.error) throw Error(repositoryResult.error);
+  let insertedUser = await userModel.read(user);
 
-      return repository;
-    });
+  if (!insertedUser.length) {
+    insertedUser = await userModel.insert(user);
+  }
 
-    Promise.all(repositories)
-      .then(resolvedRepos => {
-        const insertedRepos = repositoryModel.insert(resolvedRepos);
-        resolve(insertedRepos);
-      }).catch(error => reject(error));
-  })
-);
+  logger.info(JSON.stringify(repository));
+
+  const formatedRepository = {
+    owner: insertedUser[0].id,
+    full_name: repository.name,
+    stargazers_count: repository.stargazerCount,
+    html_url: repository.homepageUrl ? repository.homepageUrl : '',
+    description: repository.description ? repository.description : '',
+    language: repository.languages.edges[0].name,
+  };
+
+  const repositoryResult = repositoryModel.schema.validate(formatedRepository);
+  if (repositoryResult.error) {
+    logger.error(repositoryResult.error);
+    process.exit(1);
+  }
+
+  logger.info(repositoryResult);
+
+  const insertedRepos = await repositoryModel.insert(repositoryResult.value);
+  return (insertedRepos);
+};
 
 module.exports = {
   onRepository,
