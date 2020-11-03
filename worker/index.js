@@ -22,9 +22,13 @@ function initChannels() {
   repositorySubscriber.on('message', async (channel, message) => {
     logger.info(`[REPOSITORY] Message received on ${channel} channel`);
     logger.info(`[REPOSITORY] Message: ${message}`);
-    const nextMessage = await onRepository(message);
-    repositoryPublish.publish(channels.contribution, JSON.stringify(nextMessage),
-      () => logger.info(`Message sent to ${channels.contribution} channel`));
+    onRepository(message).then(repository => {
+      repositoryPublish.publish(channels.contribution, JSON.stringify(repository),
+        () => logger.info(`Message sent to ${channels.contribution} channel`));
+    }).catch(error => {
+      logger.error(error);
+      process.exit(1);
+    });
   });
 
   contributionSubscriber.on('message', (channel, message) => {
