@@ -1,17 +1,33 @@
+const Joi = require('joi');
+
 const { searchRepositories } = require('../../services/github');
 const repositoryModel = require('../../db/models/repository');
 const userModel = require('../../db/models/user');
 const logger = require('../../logger');
+
+const searchRepositoriesResponseSchema = Joi.array().has(Joi.object({
+  node: Joi.object().keys({
+    owner: Joi.object(),
+    name: Joi.string(),
+    description: Joi.string().allow(''),
+    homepageUrl: Joi.string().allow(''),
+    stargazerCount: Joi.number(),
+    languages: Joi.object(),
+    createdAt: Joi.string(),
+  }),
+}));
 
 const onRepository = async (message) => {
   // env = org/repo_name
   // 1 repository
   const { search: { edges } } = await searchRepositories({ queryString: message, first: 1 });
 
+  Joi.assert(edges, searchRepositoriesResponseSchema);
+
   const repository = edges[0].node;
   const { owner } = repository;
 
-  logger.info(JSON.stringify(owner));
+  logger.info(JSON.stringify(edges[0].node, null, '-'));
 
   const user = {
     login: owner.login,
@@ -21,11 +37,7 @@ const onRepository = async (message) => {
 
   logger.info(JSON.stringify(user));
 
-  const userResult = userModel.schema.validate(user);
-  if (userResult.error) {
-    logger.error(userResult.error);
-    process.exit(1);
-  }
+  Joi.assert(user, userModel.schema);
 
   let insertedUser = await userModel.read(user);
 
@@ -44,15 +56,9 @@ const onRepository = async (message) => {
     language: repository.languages.edges[0].name,
   };
 
-  const repositoryResult = repositoryModel.schema.validate(formatedRepository);
-  if (repositoryResult.error) {
-    logger.error(repositoryResult.error);
-    process.exit(1);
-  }
+  Joi.assert(formatedRepository, repositoryModel.schema);
 
-  logger.info(repositoryResult);
-
-  const insertedRepos = await repositoryModel.insert(repositoryResult.value);
+  const insertedRepos = await repositoryModel.insert(formatedRepository);
   return (insertedRepos);
 };
 
