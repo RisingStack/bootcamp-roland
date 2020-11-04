@@ -53,13 +53,13 @@ const onRepository = async (message) => {
     stargazers_count: repository.stargazerCount,
     html_url: repository.homepageUrl ? repository.homepageUrl : '',
     description: repository.description ? repository.description : '',
-    language: repository.languages.edges[0].name,
+    language: repository.languages.edges[0].node.name,
   };
 
   Joi.assert(formatedRepository, repositoryModel.schema);
 
-  const insertedRepos = await repositoryModel.insert(formatedRepository);
-  return (insertedRepos);
+  const insertedRepo = await repositoryModel.insert(formatedRepository);
+  return insertedRepo[0];
 };
 
 module.exports = {
