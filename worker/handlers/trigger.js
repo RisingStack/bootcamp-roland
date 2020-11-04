@@ -7,7 +7,7 @@ const { channels } = require('../index');
 
 function onTrigger(message) {
   if (!message) {
-    logger.info('Misisng query parameter');
+    logger.info('Misisng query parameter!');
     process.exit(1);
   }
 
