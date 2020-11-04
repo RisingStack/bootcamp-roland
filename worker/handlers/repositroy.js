@@ -18,8 +18,6 @@ const searchRepositoriesResponseSchema = Joi.array().has(Joi.object({
 }));
 
 const onRepository = async (message) => {
-  // env = org/repo_name
-  // 1 repository
   const { search: { edges } } = await searchRepositories({ queryString: message, first: 1 });
 
   Joi.assert(edges, searchRepositoriesResponseSchema);
