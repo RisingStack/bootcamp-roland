@@ -1,47 +1,60 @@
+const Joi = require('joi');
+
 const logger = require('../../logger');
 const userModel = require('../../db/models/user');
 const contributionModel = require('../../db/models/contribution');
 const { getContributors } = require('../../services/github');
 
+const repositorySchema = Joi.object().keys({
+  id: Joi.number(),
+  owner: Joi.number(),
+  full_name: Joi.string(),
+  description: Joi.string().allow(''),
+  html_url: Joi.string().allow(''),
+  language: Joi.string(),
+  stargazers_count: Joi.number(),
+});
+
 async function onContribution(message) {
-  const repositories = JSON.parse(message);
-  logger.info(JSON.stringify(repositories));
+  const repository = JSON.parse(message);
 
-  repositories.forEach(async repository => {
-    const repositoryName = repository.full_name;
+  Joi.assert(repository, repositorySchema);
 
-    logger.info(`repositoryName: ${repositoryName}`);
+  logger.info(JSON.stringify(repository, null, '-'));
 
-    const dbResponse = await userModel.read({ id: repository.owner });
-    const owner = dbResponse[0];
+  const repositoryName = repository.full_name;
 
-    logger.info(`userLogin: ${owner.login}`);
+  logger.info(`repositoryName: ${repositoryName}`);
 
-    const githubResponse = await getContributors(owner.login, repositoryName);
-    const collaborators = githubResponse.repository.collaborators.edges;
+  const dbResponse = await userModel.read({ id: repository.owner });
+  const owner = dbResponse[0];
 
-    logger.info(JSON.stringify(collaborators));
+  logger.info(`userLogin: ${owner.login}`);
 
-    collaborators.map(async (collaborator) => {
-      const user = {
-        login: collaborator.node.login,
-        avatar_url: collaborator.node.avatarUrl,
-        html_url: collaborator.node.url,
-      };
+  const githubResponse = await getContributors(owner.login, repositoryName);
+  const collaborators = githubResponse.repository.collaborators.edges;
 
-      let response = await userModel.read(user);
-      if (!response.length) {
-        response = await userModel.insert(user);
-      }
+  logger.info(JSON.stringify(collaborators));
 
-      const contribution = {
-        user: response[0].id,
-        repository: repository.id,
-        lineCount: 0,
-      };
+  await collaborators.map(async (collaborator) => {
+    const user = {
+      login: collaborator.node.login,
+      avatar_url: collaborator.node.avatarUrl,
+      html_url: collaborator.node.url,
+    };
 
-      contributionModel.insertOrReplace(contribution);
-    });
+    let response = await userModel.read(user);
+    if (!response.length) {
+      response = await userModel.insert(user);
+    }
+
+    const contribution = {
+      user: response[0].id,
+      repository: repository.id,
+      lineCount: 0,
+    };
+
+    await contributionModel.insertOrReplace(contribution);
   });
 }
 
