@@ -1,6 +1,9 @@
 const logger = require('../logger');
-const { initChannels } = require('../worker/index');
-const { onTrigger } = require('../worker/handlers/trigger');
+const {
+  repositorySubscriber,
+  contributionSubscriber,
+  channels,
+} = require('../worker/index');
 
 logger.info('Initiating trigger script');
 
@@ -9,8 +12,7 @@ if (!process.env.TRIGGER_QUERY) {
   process.exit(1);
 }
 
-logger.info('Initiating channels');
-initChannels();
+logger.info('Subscribing channels');
 
-logger.info('Sending trigger message');
-onTrigger(process.env.TRIGGER_QUERY);
+repositorySubscriber.subscribe(channels.trigger, () => logger.info(`Repository channel subscribed to ${channels.trigger}`));
+contributionSubscriber.subscribe(channels.repository, () => logger.info(`Contribution channel subscribed to ${channels.repository}`));
