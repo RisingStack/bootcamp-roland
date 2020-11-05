@@ -7,14 +7,14 @@ const logger = require('../../logger');
 
 const searchRepositoriesResponseSchema = Joi.array().has(Joi.object({
   node: Joi.object().keys({
-    owner: Joi.object(),
-    name: Joi.string(),
-    description: Joi.string().allow(''),
-    homepageUrl: Joi.string().allow(''),
-    stargazerCount: Joi.number(),
-    languages: Joi.object(),
-    createdAt: Joi.string(),
-  }),
+    owner: Joi.object().required(),
+    name: Joi.string().required(),
+    description: Joi.string().allow('').required(),
+    homepageUrl: Joi.string().allow('').required(),
+    stargazerCount: Joi.number().required(),
+    languages: Joi.object().required(),
+    createdAt: Joi.string().required(),
+  }).required(),
 }));
 
 const onRepository = async (message) => {

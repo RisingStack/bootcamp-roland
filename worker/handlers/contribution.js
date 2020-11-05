@@ -6,13 +6,13 @@ const contributionModel = require('../../db/models/contribution');
 const { getContributors } = require('../../services/github');
 
 const repositorySchema = Joi.object().keys({
-  id: Joi.number(),
-  owner: Joi.number(),
-  full_name: Joi.string(),
-  description: Joi.string().allow(''),
-  html_url: Joi.string().allow(''),
-  language: Joi.string(),
-  stargazers_count: Joi.number(),
+  id: Joi.number().required(),
+  owner: Joi.number().required(),
+  full_name: Joi.string().required(),
+  description: Joi.string().allow('').required(),
+  html_url: Joi.string().allow('').required(),
+  language: Joi.string().required(),
+  stargazers_count: Joi.number().required(),
 });
 
 async function onContribution(message) {
