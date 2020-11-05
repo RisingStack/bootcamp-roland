@@ -11,33 +11,42 @@ const channels = {
   contribution: 'contribution',
 };
 
+const triggerPublisher = redis.createClient(redisConfig);
 const repositorySubscriber = redis.createClient(redisConfig);
 const repositoryPublish = redis.createClient(redisConfig);
 const contributionSubscriber = redis.createClient(redisConfig);
 
-function initChannels() {
-  repositorySubscriber.subscribe(channels.repository, () => logger.info('Repository channel subscribed'));
-  contributionSubscriber.subscribe(channels.contribution, () => logger.info('Contribution channel subscribed'));
+repositorySubscriber.on('subscribe', () => {
+  triggerPublisher.publish(channels.trigger, process.env.TRIGGER_QUERY,
+    () => logger.info(`Trigger message sent to ${channels.trigger} channel`));
+});
 
-  repositorySubscriber.on('message', async (channel, message) => {
-    logger.info(`[REPOSITORY] Message received on ${channel} channel`);
-    logger.info(`[REPOSITORY] Message: ${message}`);
-    onRepository(message).then(repository => {
-      repositoryPublish.publish(channels.contribution, JSON.stringify(repository),
-        () => logger.info(`Message sent to ${channels.contribution} channel`));
-    }).catch(error => {
-      logger.error(error);
-      process.exit(1);
-    });
+repositorySubscriber.on('message', (channel, message) => {
+  logger.info(`[REPOSITORY] Message received on ${channel} channel`);
+  logger.info(`[REPOSITORY] Message: ${message}`);
+  onRepository(message).then(repository => {
+    repositoryPublish.publish(channels.repository, JSON.stringify(repository),
+      () => logger.info(`Message sent to ${channels.repository} channel`));
+  }).catch(error => {
+    logger.error(error);
+    process.exit(1);
   });
+});
 
-  contributionSubscriber.on('message', (channel, message) => {
-    logger.info(`[CONTRIBUTION] Message received on ${channel} channel`);
-    onContribution(message);
+contributionSubscriber.on('message', (channel, message) => {
+  logger.info(`[CONTRIBUTION] Message received on ${channel} channel`);
+  onContribution(message).then(() => {
+    logger.info('Trigger script completed successfully!');
+    process.exit(0);
+  }).catch(error => {
+    logger.error(error);
+    process.exit(1);
   });
-}
+});
 
 module.exports = {
   channels,
-  initChannels,
+  triggerPublisher,
+  contributionSubscriber,
+  repositorySubscriber,
 };
