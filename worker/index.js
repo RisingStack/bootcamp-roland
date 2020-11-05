@@ -2,7 +2,7 @@ const redis = require('redis');
 
 const redisConfig = require('./config');
 const logger = require('../logger');
-const { onRepository } = require('./handlers/repositroy');
+const { onRepository } = require('./handlers/repository');
 const { onContribution } = require('./handlers/contribution');
 
 const channels = {
