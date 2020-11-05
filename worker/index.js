@@ -13,7 +13,7 @@ const channels = {
 
 const triggerPublisher = redis.createClient(redisConfig);
 const repositorySubscriber = redis.createClient(redisConfig);
-const repositoryPublish = redis.createClient(redisConfig);
+const repositoryPublisher = redis.createClient(redisConfig);
 const contributionSubscriber = redis.createClient(redisConfig);
 
 repositorySubscriber.on('subscribe', () => {
@@ -25,7 +25,7 @@ repositorySubscriber.on('message', (channel, message) => {
   logger.info(`[REPOSITORY] Message received on ${channel} channel`);
   logger.info(`[REPOSITORY] Message: ${message}`);
   onRepository(message).then(repository => {
-    repositoryPublish.publish(channels.repository, JSON.stringify(repository),
+    repositoryPublisher.publish(channels.repository, JSON.stringify(repository),
       () => logger.info(`Message sent to ${channels.repository} channel`));
   }).catch(error => {
     logger.error(error);
