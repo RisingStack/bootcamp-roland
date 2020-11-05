@@ -36,7 +36,7 @@ async function onContribution(message) {
 
   logger.info(JSON.stringify(collaborators));
 
-  await collaborators.map(async (collaborator) => {
+  const promises = await collaborators.map(async (collaborator) => {
     const user = {
       login: collaborator.node.login,
       avatar_url: collaborator.node.avatarUrl,
@@ -54,8 +54,10 @@ async function onContribution(message) {
       lineCount: 0,
     };
 
-    await contributionModel.insertOrReplace(contribution);
+    return contributionModel.insertOrReplace(contribution);
   });
+
+  await Promise.all(promises);
 }
 
 module.exports = {

@@ -18,7 +18,11 @@ const searchRepositoriesResponseSchema = Joi.array().has(Joi.object({
 }));
 
 const onRepository = async (message) => {
-  const { search: { edges } } = await searchRepositories({ queryString: message, first: 1 });
+  const response = await searchRepositories({ queryString: message, first: 1 });
+
+  if (!response) throw Error(`Invalid Github API response from searchRepositories: ${response}`);
+
+  const { search: { edges } } = response;
 
   Joi.assert(edges, searchRepositoriesResponseSchema);
 
