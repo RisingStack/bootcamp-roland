@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-const { searchRepositories } = require('../../services/github');
+const githubService = require('../../services/github');
 const repositoryModel = require('../../db/models/repository');
 const userModel = require('../../db/models/user');
 const logger = require('../../logger');
@@ -18,7 +18,9 @@ const searchRepositoriesResponseSchema = Joi.array().has(Joi.object({
 }));
 
 const onRepository = async (message) => {
-  const response = await searchRepositories({ queryString: message, first: 1 });
+  const response = await githubService.searchRepositories({ queryString: message, first: 1 });
+
+  logger.info(response);
 
   if (!response) throw Error(`Invalid Github API response from searchRepositories: ${response}`);
 
