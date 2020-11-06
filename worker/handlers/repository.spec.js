@@ -56,7 +56,7 @@ describe('Repository worker handler', () => {
       html_url: 'test.com',
       id: response[0].id,
       language: 'Test language',
-      owner: 1,
+      owner: response[0].owner,
       stargazers_count: 10,
     };
 
