@@ -29,6 +29,7 @@ const mockMessage = {
         createdAt: '2010',
       },
     }],
+    repositoryCount: 1,
   },
 };
 
