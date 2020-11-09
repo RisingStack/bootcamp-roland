@@ -5,17 +5,20 @@ const repositoryModel = require('../../db/models/repository');
 const userModel = require('../../db/models/user');
 const logger = require('../../logger');
 
-const searchRepositoriesResponseSchema = Joi.array().has(Joi.object({
-  node: Joi.object().keys({
-    owner: Joi.object().required(),
-    name: Joi.string().required(),
-    description: Joi.string().allow('').required(),
-    homepageUrl: Joi.string().allow('').required(),
-    stargazerCount: Joi.number().required(),
-    languages: Joi.object().required(),
-    createdAt: Joi.string().required(),
-  }).required(),
-}));
+const searchRepositoriesResponseSchema = Joi.object().keys({
+  edges: Joi.array().has(Joi.object({
+    node: Joi.object().keys({
+      owner: Joi.object().required(),
+      name: Joi.string().required(),
+      description: Joi.string().allow('').required(),
+      homepageUrl: Joi.string().allow('').required(),
+      stargazerCount: Joi.number().required(),
+      languages: Joi.object().required(),
+      createdAt: Joi.string().required(),
+    }).required(),
+  })).required(),
+  repositoryCount: Joi.number().required(),
+}).required();
 
 const onRepository = async (message) => {
   const response = await githubService.searchRepositories({ queryString: message, first: 1 });
@@ -24,10 +27,9 @@ const onRepository = async (message) => {
 
   if (!response) throw Error(`Invalid Github API response from searchRepositories: ${response}`);
 
+  Joi.assert(response.search, searchRepositoriesResponseSchema);
+
   const { search: { edges } } = response;
-
-  Joi.assert(edges, searchRepositoriesResponseSchema);
-
   const repository = edges[0].node;
   const { owner } = repository;
 
