@@ -16,7 +16,7 @@ const repositorySubscriber = redis.createClient(redisConfig);
 const repositoryPublisher = redis.createClient(redisConfig);
 const contributionSubscriber = redis.createClient(redisConfig);
 
-contributionSubscriber.on('subscribe', (channel) => {
+repositorySubscriber.on('subscribe', (channel) => {
   logger.info(`Subscribed even on ${channel}`);
   triggerPublisher.publish(channels.trigger, process.env.TRIGGER_QUERY,
     () => logger.info(`Trigger message sent to ${channels.trigger} channel`));
