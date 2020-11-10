@@ -23,17 +23,17 @@ const searchRepositoriesResponseSchema = Joi.object().keys({
 const onRepository = async (message) => {
   const response = await githubService.searchRepositories({ queryString: message, first: 1 });
 
-  logger.info(response);
+  logger.info(response, 'Github searchRepositories() response:');
 
   if (!response) throw Error(`Invalid Github API response from searchRepositories: ${response}`);
 
-  Joi.assert(response.search, searchRepositoriesResponseSchema);
+  Joi.assert(response.search, searchRepositoriesResponseSchema, Error('Invalid search property on response object.'));
 
   const { search: { edges } } = response;
   const repository = edges[0].node;
   const { owner } = repository;
 
-  logger.info(JSON.stringify(edges[0].node, null, '-'));
+  logger.info(repository, 'Found repository:');
 
   const user = {
     login: owner.login,
@@ -41,7 +41,7 @@ const onRepository = async (message) => {
     html_url: owner.url,
   };
 
-  logger.info(JSON.stringify(user));
+  logger.info(user, 'Constructed user object:');
 
   Joi.assert(user, userModel.schema);
 
@@ -50,8 +50,6 @@ const onRepository = async (message) => {
   if (!insertedUser.length) {
     insertedUser = await userModel.insert(user);
   }
-
-  logger.info(JSON.stringify(repository));
 
   const formatedRepository = {
     owner: insertedUser[0].id,
@@ -62,10 +60,17 @@ const onRepository = async (message) => {
     language: repository.languages.edges[0].node.name,
   };
 
+  logger.info(formatedRepository, 'Constructed repository object:');
+
   Joi.assert(formatedRepository, repositoryModel.schema);
 
   const insertedRepo = await repositoryModel.insert(formatedRepository);
-  return insertedRepo[0];
+  const serviceResp = await githubService.getContributors(user.login, insertedRepo[0].full_name);
+
+  const { repository: { collaborators: { edges: collaborators } } } = serviceResp;
+  logger.info(collaborators, 'Collaborators:');
+
+  return { repository: insertedRepo[0], collaborators };
 };
 
 module.exports = {
