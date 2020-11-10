@@ -16,7 +16,8 @@ const repositorySubscriber = redis.createClient(redisConfig);
 const repositoryPublisher = redis.createClient(redisConfig);
 const contributionSubscriber = redis.createClient(redisConfig);
 
-repositorySubscriber.on('subscribe', () => {
+contributionSubscriber.on('subscribe', (channel) => {
+  logger.info(`Subscribed even on ${channel}`);
   triggerPublisher.publish(channels.trigger, process.env.TRIGGER_QUERY,
     () => logger.info(`Trigger message sent to ${channels.trigger} channel`));
 });
@@ -24,9 +25,11 @@ repositorySubscriber.on('subscribe', () => {
 repositorySubscriber.on('message', (channel, message) => {
   logger.info(`[REPOSITORY] Message received on ${channel} channel`);
   logger.info(`[REPOSITORY] Message: ${message}`);
-  onRepository(message).then(repository => {
-    repositoryPublisher.publish(channels.repository, JSON.stringify(repository),
-      () => logger.info(`Message sent to ${channels.repository} channel`));
+  onRepository(message).then(({ repository, collaborators }) => {
+    collaborators.forEach(element => {
+      repositoryPublisher.publish(channels.repository, repository,
+        () => logger.info(`Message sent to ${channels.repository} channel`));
+    });
   }).catch(error => {
     logger.error(error);
     process.exit(1);
