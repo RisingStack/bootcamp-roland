@@ -11,17 +11,29 @@ chai.should();
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);
 
-const searchRepositoryQueryString = `query search($queryString:String!){ 
-    search(query: $queryString, type: REPOSITORY, first: 10) {
+const searchRepositoryQueryString = `query search($queryString:String!, $first:Int){ 
+    search(query: $queryString, type: REPOSITORY, first: $first) {
       repositoryCount
       edges {
         node {
-        ... on RepositoryInfo {
+        ... on Repository {
           name
+          description
+          homepageUrl
+          stargazerCount
+          languages(first: 1) {
+            edges {
+              node {
+                name
+              }
+            }
+          }
           createdAt
           owner {
             id
             login
+            avatarUrl
+            url
           }
         }
       }
@@ -30,7 +42,7 @@ const searchRepositoryQueryString = `query search($queryString:String!){
 
 const getContributorsQueryString = `query collaboratorsQuery($owner:String!,$repoName:String!){
     repository(owner: $owner, name: $repoName) {
-      collaborators(first:100, affiliation: DIRECT) {
+      collaborators(first:10) {
         edges {
           node {
             id
@@ -48,7 +60,7 @@ const githubAPIMock = nock('https://api.github.com');
 describe('Github service', () => {
   it('should use Authorization header and a token provided from config.js', async () => {
     const scope = githubAPIMock.matchHeader('Authorization', `Bearer ${config.githubToken}`).post('/graphql').reply(200, { data: {} });
-    await github.searchRepositories('WordsMemorizer');
+    await github.searchRepositories({ queryString: 'WordsMemorizer' });
     scope.done();
   });
 
@@ -91,17 +103,17 @@ describe('Github service', () => {
       },
     };
 
-    it('should throw "queryString is a mandatory parameter"', () => (github.searchRepositories().should.be.rejectedWith('queryString is a mandatory parameter')));
+    it('should throw "queryString is a mandatory parameter"', () => (github.searchRepositories('').should.be.rejectedWith('queryString is a mandatory parameter')));
 
     it('should return dummy response', async () => {
       githubAPIMock.post('/graphql').reply(200, { data: mockResponse });
-      const response = await github.searchRepositories('WordsMemorizer');
+      const response = await github.searchRepositories({ queryString: 'WordsMemorizer' });
       response.should.deep.equal(mockResponse);
     });
 
     it('should include "$queryString" query variable', async () => {
       const scope = githubAPIMock.post('/graphql', body => (body.query && body.query === searchRepositoryQueryString)).reply(200, { data: mockResponse });
-      await github.searchRepositories('WordsMemorizer');
+      await github.searchRepositories({ queryString: 'WordsMemorizer' });
       scope.done();
     });
   });

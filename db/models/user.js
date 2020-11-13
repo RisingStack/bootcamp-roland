@@ -7,7 +7,7 @@ const schema = Joi.object({
   html_url: Joi.string().uri(),
 });
 
-const insert = data => db('user').insert(data);
+const insert = data => db('user').insert(data).returning('*');
 
 const read = param => db('user').where(param).select();
 

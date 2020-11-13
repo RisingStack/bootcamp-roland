@@ -6,18 +6,19 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "lint-check": "eslint \"**/*.js\" --ignore-pattern node_modules/",
+    "linter": "eslint \"**/*.js\" --ignore-pattern node_modules/",
     "test-web": "npm run migrate-test-db && LOG_LEVEL=silent NODE_ENV=test mocha './{!(node_modules)/**/,}*.spec.js' --exit",
     "migrate-db": "knex migrate:latest",
     "migrate-test-db": "NODE_ENV=test npm run migrate-down && NODE_ENV=test npm run migrate-up ",
     "migrate-up": "knex migrate:up",
     "migrate-down": "knex migrate:down",
     "seed-db": "knex seed:run",
-    "seed-test-db": "NODE_ENV=test knex seed:run"
+    "seed-test-db": "NODE_ENV=test knex seed:run",
+    "trigger": "node ./scripts/trigger.js"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint-check",
+      "pre-commit": "npm run linter",
       "pre-push": "npm run test-web"
     }
   },
@@ -45,18 +46,20 @@
     "lodash": "4.17.20",
     "pg": "8.3.3",
     "pino": "6.7.0",
-    "pino-pretty": "4.3.0"
+    "pino-pretty": "4.3.0",
+    "redis": "3.0.2"
   },
   "devDependencies": {
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
     "chai-http": "4.3.0",
     "eslint": "7.2.0",
-    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-airbnb-base": "14.2.0",
     "eslint-plugin-import": "2.22.1",
     "husky": "4.3.0",
     "mocha": "8.1.3",
     "nock": "13.0.4",
-    "nodemon": "2.0.4"
+    "nodemon": "2.0.4",
+    "sinon": "9.2.1"
   }
 }
